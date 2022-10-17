@@ -1,5 +1,4 @@
 
-#if 0 /* in case someone actually tries to compile this */
 
 /* example.c - an example of using libpng
  *
@@ -41,8 +40,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <png.h>
-#include <zlib.h>
+#include <png/png.h>
+#include <zlib/zlib.h>
 
 int main(int argc, const char **argv)
 {
@@ -213,7 +212,7 @@ int main(int argc, const char **argv)
  * header file.  Include any standard headers and feature test macros your
  * program requires before including png.h:
  */
-#include <png.h>
+#include <png/png.h>
 
  /* The png_jmpbuf() macro, used in error handling, became available in
   * libpng version 1.0.6.  If you want to be able to run your code with older
@@ -264,6 +263,7 @@ int check_if_png(char *file_name, FILE **fp)
    return(!png_sig_cmp(buf, 0, PNG_BYTES_TO_CHECK));
 }
 
+#if 0
 /* Read a PNG file.  You may want to return an error code if the read
  * fails (depending upon the failure).  There are two "prototypes" given
  * here - one where we are given the filename, and we need to open the
@@ -299,7 +299,7 @@ void read_png(FILE *fp, int sig_read) /* File is already open */
     * was compiled with a compatible version of the library.  REQUIRED.
     */
    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-       png_voidp user_error_ptr, user_error_fn, user_warning_fn);
+       user_error_ptr, user_error_fn, user_warning_fn);
 
    if (png_ptr == NULL)
    {
@@ -587,7 +587,6 @@ void read_png(FILE *fp, int sig_read) /* File is already open */
    /* That's it! */
    return (OK);
 }
-
 /* Progressively read a file */
 
 int
@@ -600,7 +599,7 @@ initialize_png_reader(png_structp *png_ptr, png_infop *info_ptr)
     * linked libraries.
     */
    *png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-        png_voidp user_error_ptr, user_error_fn, user_warning_fn);
+        user_error_ptr, user_error_fn, user_warning_fn);
    if (*png_ptr == NULL)
    {
       *info_ptr = NULL;
@@ -1037,5 +1036,4 @@ void write_png(char *file_name /* , ... other image information ... */)
    /* That's it! */
    return (OK);
 }
-
-#endif /* if 0 */
+#endif

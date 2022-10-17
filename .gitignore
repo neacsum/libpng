@@ -76,3 +76,7 @@ pngout.png
 
 # Libpng CI artifacts
 out/
+
+.vs/
+build/
+lib/

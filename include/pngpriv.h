@@ -68,7 +68,7 @@
  * are not internal definitions may be required.  This is handled below just
  * before png.h is included, but load the configuration now if it is available.
  */
-#ifndef PNGLCONF_H
+#if __has_include("pnglibconf.h")
 #  include "pnglibconf.h"
 #endif
 
@@ -389,7 +389,7 @@
 #  endif
 #endif
 
-#include "png.h"
+#include <png/png.h>
 
 /* pngconf.h does not set PNG_DLL_EXPORT unless it is required, so: */
 #ifndef PNG_DLL_EXPORT

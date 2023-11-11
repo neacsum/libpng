@@ -24,6 +24,8 @@
 #define _BSD_SOURCE 1 /* For the floating point exception extension */
 #define _DEFAULT_SOURCE 1 /* For the floating point exception extension */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <signal.h>
 #include <stdio.h>
 
@@ -51,13 +53,13 @@
 #ifdef PNG_FREESTANDING_TESTS
 #  include <png.h>
 #else
-#  include "../../png.h"
+#  include <png/png.h>
 #endif
 
 #ifdef PNG_ZLIB_HEADER
 #  include PNG_ZLIB_HEADER
 #else
-#  include <zlib.h>   /* For crc32 */
+#  include <zlib/zlib.h>   /* For crc32 */
 #endif
 
 /* 1.6.1 added support for the configure test harness, which uses 77 to indicate
@@ -158,7 +160,7 @@ typedef png_byte *png_const_bytep;
 #ifdef PNG_FREESTANDING_TESTS
 #  include <cexcept.h>
 #else
-#  include "../visupng/cexcept.h"
+#  include "cexcept.h"
 #endif
 
 #ifdef __cplusplus
@@ -930,21 +932,22 @@ store_storenew(png_store *ps)
 static void
 store_freefile(png_store_file **ppf)
 {
-   if (*ppf != NULL)
-   {
-      store_freefile(&(*ppf)->next);
-
-      store_freebuffer(&(*ppf)->data);
-      (*ppf)->datacount = 0;
-      if ((*ppf)->palette != NULL)
-      {
-         free((*ppf)->palette);
-         (*ppf)->palette = NULL;
-         (*ppf)->npalette = 0;
-      }
-      free(*ppf);
-      *ppf = NULL;
-   }
+  png_store_file* crt = *ppf;
+  while (crt)
+  {
+    png_store_file* next = crt->next;
+    store_freebuffer(&crt->data);
+    crt->datacount = 0;
+    if (crt->palette != NULL)
+    {
+      free(crt->palette);
+      crt->palette = NULL;
+      crt->npalette = 0;
+    }
+    free(crt);
+    crt = next;
+  }
+  *ppf = NULL;
 }
 
 static unsigned int

@@ -79,4 +79,7 @@ out/
 
 .vs/
 build/
-lib/
+/lib
+include/zlib
+*.user
+

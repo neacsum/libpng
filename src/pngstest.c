@@ -13,6 +13,7 @@
 
 #define _ISOC90_SOURCE 1
 #define MALLOC_CHECK_ 2 /*glibc facility: turn on debugging*/
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -32,7 +33,7 @@
 #ifdef PNG_FREESTANDING_TESTS
 #  include <png.h>
 #else
-#  include "../../png.h"
+#  include <png/png.h>
 #endif
 
 /* 1.6.1 added support for the configure test harness, which uses 77 to indicate
@@ -45,7 +46,7 @@
 #endif
 
 #ifdef PNG_SIMPLIFIED_READ_SUPPORTED /* Else nothing can be done */
-#include "../tools/sRGB.h"
+#include <sRGB.h>
 
 /* KNOWN ISSUES
  *
@@ -2017,7 +2018,7 @@ static void (* const gpc_fn_colormapped[8/*in*/][8/*out*/])
  * gpc_error_to_colormap.
  */
 #if PNG_FORMAT_FLAG_COLORMAP == 8 /* extra check also required */
-#  include "pngstest-errors.h" /* machine generated */
+#  include <pngstest-errors.h> /* machine generated */
 #endif /* COLORMAP flag check */
 #endif /* flag checks */
 

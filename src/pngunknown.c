@@ -16,10 +16,13 @@
  *   currently just a minimal validation for the built-in libpng facilities.
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <setjmp.h>
+
 
 /* Define the following to use this test against your installed libpng, rather
  * than the one being built here:
@@ -27,7 +30,7 @@
 #ifdef PNG_FREESTANDING_TESTS
 #  include <png.h>
 #else
-#  include "../../png.h"
+#  include <png/png.h>
 #endif
 
 /* 1.6.1 added support for the configure test harness, which uses 77 to indicate

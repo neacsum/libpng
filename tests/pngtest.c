@@ -32,6 +32,9 @@
  */
 
 #define _POSIX_SOURCE 1
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +44,7 @@
 /*  #define STDERR stderr  */
 #define STDERR stdout   /* For DOS */
 
-#include "png.h"
+#include <png/png.h>
 
 /* Known chunks that exist in pngtest.png must be supported or pngtest will fail
  * simply as a result of re-ordering them.  This may be fixed in 1.7
@@ -70,7 +73,7 @@
 #ifdef PNG_ZLIB_HEADER
 #  include PNG_ZLIB_HEADER /* defined by pnglibconf.h from 1.7 */
 #else
-#  include "zlib.h"
+#  include <zlib/zlib.h>
 #endif
 
 /* Copied from pngpriv.h but only used in error messages below. */

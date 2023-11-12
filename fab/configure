@@ -626,7 +626,7 @@ PACKAGE_STRING='libpng 1.6.39.git'
 PACKAGE_BUGREPORT='png-mng-implement@lists.sourceforge.net'
 PACKAGE_URL=''
 
-ac_unique_file="pngget.c"
+ac_unique_file="src/pngget.c"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stddef.h>
@@ -2512,7 +2512,7 @@ as_fn_append ac_header_c_list " unistd.h unistd_h HAVE_UNISTD_H"
 ac_aux_files="ltmain.sh config.guess config.sub compile missing install-sh"
 
 # Locations in which to look for auxiliary files.
-ac_aux_dir_candidates="${srcdir}${PATH_SEPARATOR}${srcdir}/..${PATH_SEPARATOR}${srcdir}/../.."
+ac_aux_dir_candidates=".${PATH_SEPARATOR}${srcdir}${PATH_SEPARATOR}${srcdir}/..${PATH_SEPARATOR}${srcdir}/../.."
 
 # Search for a directory containing all of the required auxiliary files,
 # $ac_aux_files, from the $PATH-style list $ac_aux_dir_candidates.

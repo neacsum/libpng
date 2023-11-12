@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\pngvalid.c" />
+    <ClCompile Include="$(SolutionDir)src\pngvalid.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\zlib\include\zlib\zlib.h" />
-    <ClInclude Include="..\..\include\cexcept.h" />
-    <ClInclude Include="..\..\include\png\png.h" />
+    <ClInclude Include="$(SolutionDir)include\zlib\zlib.h" />
+    <ClInclude Include="$(SolutionDir)include\cexcept.h" />
+    <ClInclude Include="$(SolutionDir)include\png\png.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -79,19 +79,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)build/exe/$(PlatformTarget)/$(Configuration)/</OutDir>
+    <OutDir>$(SolutionDir)build/bin/$(PlatformTarget)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)build/o/$(ProjectName)/$(PlatformTarget)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)build/exe/$(PlatformTarget)/$(Configuration)/</OutDir>
+    <OutDir>$(SolutionDir)build/bin/$(PlatformTarget)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)build/o/$(ProjectName)/$(PlatformTarget)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)build/exe/$(PlatformTarget)/$(Configuration)/</OutDir>
+    <OutDir>$(SolutionDir)build/bin/$(PlatformTarget)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)build/o/$(ProjectName)/$(PlatformTarget)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)build/exe/$(PlatformTarget)/$(Configuration)/</OutDir>
+    <OutDir>$(SolutionDir)build/bin/$(PlatformTarget)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)build/o/$(ProjectName)/$(PlatformTarget)/$(Configuration)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

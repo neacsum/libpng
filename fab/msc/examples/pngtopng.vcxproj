@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f7c75bb0-9d27-4c88-bffd-1d97e768df91}</ProjectGuid>
-    <RootNamespace>pngtest</RootNamespace>
+    <ProjectGuid>{f31acced-9b67-4f6a-9370-775ad7193ed6}</ProjectGuid>
+    <RootNamespace>pngtopng</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -151,7 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)tests\pngtest.c" />
+    <ClCompile Include="$(SolutionDir)\examples\pngtopng.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <math.h>
+#pragma comment (lib, "zlib.lib")
 
 #if defined(HAVE_CONFIG_H) && !defined(PNG_NO_CONFIG_H)
 #  include <config.h>

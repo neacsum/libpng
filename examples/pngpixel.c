@@ -18,6 +18,9 @@
  * png_set_interlace_handling() is not called and, instead, the code handles the
  * interlace passes directly looking for the required pixel.
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <setjmp.h> /* required for error handling */
@@ -25,7 +28,7 @@
 /* Normally use <png.h> here to get the installed libpng, but this is done to
  * ensure the code picks up the local libpng implementation:
  */
-#include "../../png.h"
+#include <png/png.h>
 
 #if defined(PNG_READ_SUPPORTED) && defined(PNG_SEQUENTIAL_READ_SUPPORTED)
 
@@ -306,6 +309,7 @@ int main(int argc, const char **argv)
                                * buffer.
                                */
                               print_pixel(png_ptr, info_ptr, row_tmp, ppx);
+                              result = 0;
 
                               /* Now terminate the loops early - we have
                                * found and handled the required data.

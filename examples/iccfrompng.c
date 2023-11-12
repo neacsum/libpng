@@ -19,12 +19,15 @@
  * extracted to a similarly named file with the extension replaced by 'icc',
  * which will be overwritten without warning.
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <setjmp.h>
 #include <string.h>
 #include <stdio.h>
 
-#include <png.h>
+#include <png/png.h>
 
 #if defined(PNG_READ_SUPPORTED) && defined(PNG_STDIO_SUPPORTED) && \
     defined (PNG_iCCP_SUPPORTED)

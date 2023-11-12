@@ -620,8 +620,9 @@ typedef char            * * * png_charppp;
 
 #endif /* PNG_BUILDING_SYMBOL_TABLE */
 
-#if defined(_MSC_VER) && !defined (PNGLIB_BUILD)
+#if defined(_MSC_VER)
 #pragma comment (lib, "png.lib")
+#pragma comment (lib, "zlib")
 #endif
 
 #endif /* PNGCONF_H */

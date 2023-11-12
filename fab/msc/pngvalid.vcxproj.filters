@@ -11,18 +11,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\pngvalid.c">
+    <ClCompile Include="$(SolutionDir)src\pngvalid.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\cexcept.h">
+    <ClInclude Include="$(SolutionDir)include\cexcept.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\png\png.h">
+    <ClInclude Include="$(SolutionDir)include\png\png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\zlib\include\zlib\zlib.h">
+    <ClInclude Include="$(SolutionDir)include\zlib\zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

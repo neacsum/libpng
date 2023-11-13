@@ -31,6 +31,8 @@
  * be regarded as being layered one on top of the other with the first (leftmost
  * on the command line) being at the bottom and the last on the top.
  */
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,12 +44,12 @@
  * file is linked against a sufficiently recent libpng (1.6+) it is ok to
  * change this to <png.h>:
  */
-#include "../../png.h"
+#include <png/png.h>
 
 #ifdef PNG_SIMPLIFIED_READ_SUPPORTED
 
 #define sprite_name_chars 15
-struct sprite {
+struct sprite {      
    FILE         *file;
    png_uint_16p  buffer;
    unsigned int  width;
@@ -220,7 +222,7 @@ create_sprite(struct sprite *sprite, int *argc, const char ***argv)
 
             image.format = PNG_FORMAT_LINEAR_RGB_ALPHA;
 
-            buffer = malloc(PNG_IMAGE_SIZE(image));
+            buffer = malloc(PNG_IMAGE_SIZE(image)+4);
 
             if (buffer != NULL)
             {
@@ -351,6 +353,7 @@ add_sprite(png_imagep output, png_bytep out_buf, struct sprite *sprite,
              * output using the simplified API.
              */
             png_image in;
+            memset(&in, 0, sizeof(png_image));
 
             in.version = PNG_IMAGE_VERSION;
             rewind(sprite->file);

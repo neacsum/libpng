@@ -1,0 +1,15 @@
+{
+  "name": "png",
+  "git": "git@github.com:neacsum/libpng.git",
+  "https": "https://github.com/neacsum/libpng.git",
+  "build": [
+    {"cmd": "build.bat", "args": ["lib"]}
+  ], 
+  "depends": [
+    {
+      "name": "zlib",
+      "git": "git@github.com:neacsum/zlib.git",
+      "https": "https://github.com/neacsum/zlib.git"
+    }
+  ]
+}

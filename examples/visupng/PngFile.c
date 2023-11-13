@@ -9,13 +9,15 @@
  * and license in png.h
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <windows.h>
 #include <commdlg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <zlib.h>
+#include <zlib/zlib.h>
 
-#include "png.h"
+#include <png/png.h>
 #include "pngfile.h"
 #include "cexcept.h"
 
@@ -74,7 +76,7 @@ void PngFileInitialize (HWND hwnd)
     ofn.lpTemplateName    = NULL;
 }
 
-BOOL PngFileOpenDlg (HWND hwnd, PTSTR pstrFileName, PTSTR pstrTitleName)
+BOOL PngFileOpenDlg (HWND hwnd, char* pstrFileName, char* pstrTitleName)
 {
     ofn.hwndOwner         = hwnd;
     ofn.lpstrFile         = pstrFileName;
@@ -84,7 +86,7 @@ BOOL PngFileOpenDlg (HWND hwnd, PTSTR pstrFileName, PTSTR pstrTitleName)
     return GetOpenFileName (&ofn);
 }
 
-BOOL PngFileSaveDlg (HWND hwnd, PTSTR pstrFileName, PTSTR pstrTitleName)
+BOOL PngFileSaveDlg (HWND hwnd, char* pstrFileName, char* pstrTitleName)
 {
     ofn.hwndOwner         = hwnd;
     ofn.lpstrFile         = pstrFileName;
@@ -96,7 +98,7 @@ BOOL PngFileSaveDlg (HWND hwnd, PTSTR pstrFileName, PTSTR pstrTitleName)
 
 /* PNG image handler functions */
 
-BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
+BOOL PngLoadImage (char* pstrFileName, png_byte **ppbImageData,
                    int *piWidth, int *piHeight, int *piChannels, png_color *pBkgColor)
 {
     static FILE        *pfFile;
@@ -224,7 +226,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
 
         /* row_bytes is the width x number of channels */
 
-        ulRowBytes = png_get_rowbytes(png_ptr, info_ptr);
+        ulRowBytes = (png_uint_32)png_get_rowbytes(png_ptr, info_ptr);
         ulChannels = png_get_channels(png_ptr, info_ptr);
 
         *piChannels = ulChannels;
@@ -236,7 +238,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
             free (pbImageData);
             pbImageData = NULL;
         }
-        if ((*piHeight) > ((size_t)(-1))/ulRowBytes) {
+        if ((*piHeight) > ((size_t)(-1))/ulRowBytes)
         {
             png_error(png_ptr, "Visual PNG: image is too big");
         }
@@ -296,7 +298,7 @@ BOOL PngLoadImage (PTSTR pstrFileName, png_byte **ppbImageData,
 }
 
 
-BOOL PngSaveImage (PTSTR pstrFileName, png_byte *pDiData,
+BOOL PngSaveImage (char* pstrFileName, png_byte *pDiData,
                    int iWidth, int iHeight, png_color bkgColor)
 {
     const int           ciBitDepth = 8;

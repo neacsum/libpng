@@ -18,6 +18,7 @@
         <MSBuild Projects="fab/msc/examples/pngpixel.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
         <MSBuild Projects="fab/msc/examples/pngtopng.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
         <MSBuild Projects="fab/msc/examples/simpleover.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="fab/msc/examples/visupng.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
     </Target>
 	
     <Target Name="tests">

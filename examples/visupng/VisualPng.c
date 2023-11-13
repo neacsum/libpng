@@ -17,6 +17,8 @@
 #define LONGNAME  "Win32 Viewer for PNG-files"
 #define VERSION   "1.0 of 2000 June 07"
 
+#define _CRT_SECURE_NO_WARNINGS
+
 /* constants */
 
 #define MARGIN 8
@@ -27,11 +29,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-#include <zlib.h>
+#include <zlib/zlib.h>
 
 /* application includes */
 
-#include "png.h"
+#include <png/png.h>
 #include "pngfile.h"
 #include "resource.h"
 
@@ -40,17 +42,17 @@
 /* function prototypes */
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
-BOOL    CALLBACK AboutDlgProc (HWND, UINT, WPARAM, LPARAM) ;
+INT_PTR    CALLBACK AboutDlgProc (HWND, UINT, WPARAM, LPARAM) ;
 
 BOOL CenterAbout (HWND hwndChild, HWND hwndParent);
 
-BOOL BuildPngList (PTSTR pstrPathName, TCHAR **ppFileList, int *pFileCount,
+BOOL BuildPngList (char* pstrPathName, char **ppFileList, int *pFileCount,
         int *pFileIndex);
 
-BOOL SearchPngList (TCHAR *pFileList, int FileCount, int *pFileIndex,
-        PTSTR pstrPrevName, PTSTR pstrNextName);
+BOOL SearchPngList (char* pFileList, int FileCount, int *pFileIndex,
+        char* pstrPrevName, char* pstrNextName);
 
-BOOL LoadImageFile(HWND hwnd, PTSTR pstrPathName,
+BOOL LoadImageFile(HWND hwnd, char* pstrPathName,
         png_byte **ppbImage, int *pxImgSize, int *pyImgSize, int *piChannels,
         png_color *pBkgColor);
 
@@ -65,7 +67,7 @@ BOOL InitBitmap (
 BOOL FillBitmap (
         BYTE *pDiData, int cxWinSize, int cyWinSize,
         BYTE *pbImage, int cxImgSize, int cyImgSize, int cImgChannels,
-        BOOL bStretched);
+        BOOL bStretched, HWND hwnd);
 
 /* a few global variables */
 
@@ -141,7 +143,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
             DispatchMessage (&msg);
         }
     }
-    return msg.wParam;
+    return (int)msg.wParam;
 }
 
 LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam,
@@ -165,10 +167,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam,
     static BYTE              *pDib = NULL;
     static BYTE              *pDiData = NULL;
 
-    static TCHAR              szImgPathName [MAX_PATH];
-    static TCHAR              szTitleName [MAX_PATH];
+    static char              szImgPathName [MAX_PATH];
+    static char              szTitleName [MAX_PATH];
 
-    static TCHAR             *pPngFileList = NULL;
+    static char             *pPngFileList = NULL;
     static int                iPngFileCount;
     static int                iPngFileIndex;
 
@@ -428,7 +430,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam,
     return DefWindowProc (hwnd, message, wParam, lParam);
 }
 
-BOOL CALLBACK AboutDlgProc (HWND hDlg, UINT message,
+INT_PTR CALLBACK AboutDlgProc (HWND hDlg, UINT message,
                             WPARAM wParam, LPARAM lParam)
 {
      switch (message)
@@ -510,17 +512,17 @@ BOOL CenterAbout (HWND hwndChild, HWND hwndParent)
  *  BuildPngList
  *----------------
  */
-BOOL BuildPngList (PTSTR pstrPathName, TCHAR **ppFileList, int *pFileCount,
+BOOL BuildPngList (char* pstrPathName, char** ppFileList, int *pFileCount,
      int *pFileIndex)
 {
-    static TCHAR              szImgPathName [MAX_PATH];
-    static TCHAR              szImgFileName [MAX_PATH];
-    static TCHAR              szImgFindName [MAX_PATH];
+    static char              szImgPathName [MAX_PATH];
+    static char              szImgFileName [MAX_PATH];
+    static char              szImgFindName [MAX_PATH];
 
     WIN32_FIND_DATA           finddata;
     HANDLE                    hFind;
 
-    static TCHAR              szTmp [MAX_PATH];
+    static char              szTmp [MAX_PATH];
     BOOL                      bOk;
     int                       i, ii;
     int                       j, jj;
@@ -558,7 +560,7 @@ BOOL BuildPngList (PTSTR pstrPathName, TCHAR **ppFileList, int *pFileCount,
 
     /* allocation memory for file-list */
 
-    *ppFileList = (TCHAR *) malloc (*pFileCount * MAX_PATH);
+    *ppFileList = (char*) malloc (*pFileCount * MAX_PATH);
 
     /* second cycle: read directory and store filenames in file-list */
 
@@ -616,8 +618,8 @@ BOOL BuildPngList (PTSTR pstrPathName, TCHAR **ppFileList, int *pFileCount,
  */
 
 BOOL SearchPngList (
-        TCHAR *pFileList, int FileCount, int *pFileIndex,
-        PTSTR pstrPrevName, PTSTR pstrNextName)
+        char* pFileList, int FileCount, int *pFileIndex,
+        char* pstrPrevName, char* pstrNextName)
 {
     if (FileCount > 0)
     {
@@ -658,11 +660,11 @@ BOOL SearchPngList (
  *-----------------
  */
 
-BOOL LoadImageFile (HWND hwnd, PTSTR pstrPathName,
+BOOL LoadImageFile (HWND hwnd, char* pstrPathName,
                 png_byte **ppbImage, int *pxImgSize, int *pyImgSize,
                 int *piChannels, png_color *pBkgColor)
 {
-    static TCHAR szTmp [MAX_PATH];
+    static char szTmp [MAX_PATH];
 
     /* if there's an existing PNG, free the memory */
 
@@ -726,9 +728,10 @@ BOOL DisplayImage (HWND hwnd, BYTE **ppDib,
         pDib = NULL;
     }
 
-    if (cyWinSize > ((size_t)(-1))/wDIRowBytes) {
+    if (cyWinSize > ((size_t)(-1))/wDIRowBytes) 
     {
-        MessageBox (hwnd, TEXT ("Visual PNG: image is too big");
+        MessageBox (hwnd, TEXT ("Visual PNG: image is too big"),
+        szProgName, MB_ICONEXCLAMATION | MB_OK);
     }
     if (!(pDib = (BYTE *) malloc (sizeof(BITMAPINFOHEADER) +
         wDIRowBytes * cyWinSize)))
@@ -764,7 +767,7 @@ BOOL DisplayImage (HWND hwnd, BYTE **ppDib,
         FillBitmap (
             pDiData, cxWinSize, cyWinSize,
             pbImage, cxImgSize, cyImgSize, cImgChannels,
-            bStretched);
+            bStretched, hwnd);
     }
 
     return TRUE;
@@ -811,7 +814,7 @@ BOOL InitBitmap (BYTE *pDiData, int cxWinSize, int cyWinSize)
 BOOL FillBitmap (
         BYTE *pDiData, int cxWinSize, int cyWinSize,
         BYTE *pbImage, int cxImgSize, int cyImgSize, int cImgChannels,
-        BOOL bStretched)
+        BOOL bStretched, HWND hwnd)
 {
     BYTE *pStretchedImage;
     BYTE *pImg;
@@ -851,9 +854,11 @@ BOOL FillBitmap (
             cxImgPos = (cxWinSize - cxNewSize) / 2;
         }
 
-        if (cyNewSize > ((size_t)(-1))/(cImgChannels * cxNewSize)) {
+        if (cyNewSize > ((size_t)(-1))/(cImgChannels * cxNewSize))
         {
-            MessageBox (hwnd, TEXT ("Visual PNG: stretched image is too big");
+            MessageBox (hwnd, TEXT ("Visual PNG: stretched image is too big"),
+              szProgName, MB_ICONEXCLAMATION | MB_OK);
+
         }
         pStretchedImage = malloc (cImgChannels * cxNewSize * cyNewSize);
         pImg = pStretchedImage;

@@ -1,0 +1,41 @@
+<!--
+	Main build file for MSBuild
+	
+	Command line:
+		msbuild [-t:target] [-p:SolutionDir=<root>] build.proj
+	
+	where:
+		<target> = one or more of "lib", "tests", "examples"
+		<root> = path to root of PNG repository
+-->
+
+<Project DefaultTargets="lib;tests;examples">  
+	<PropertyGroup Condition="'$(SolutionDir)' == '' ">
+		<!-- Assume this project is in <root>/fab/msc directory -->
+		<SolutionDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\..'))\</SolutionDir>
+	</PropertyGroup>
+
+    <Target Name="lib">	
+	    <Message Importance="High" Text="Module directory is $(SolutionDir)" />
+        <MSBuild Projects="png.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Debug;Platform=x64"/>  
+        <MSBuild Projects="png.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="png.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Debug;Platform=x86"/>  
+        <MSBuild Projects="png.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x86"/>
+    </Target>
+	
+    <Target Name="examples" DependsOnTargets="lib">
+        <MSBuild Projects="examples/example.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="examples/iccfrompng.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="examples/pngpixel.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="examples/pngtopng.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="examples/simpleover.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+        <MSBuild Projects="examples/visupng.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/> 
+    </Target>
+	
+    <Target Name="tests">
+        <MSBuild Projects="pngtest.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/>
+        <MSBuild Projects="pngstest.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/>
+        <MSBuild Projects="pngvalid.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/>
+        <MSBuild Projects="pngunknown.vcxproj" Properties="SolutionDir=$(SolutionDir);Configuration=Release;Platform=x64"/>		
+    </Target>
+</Project>

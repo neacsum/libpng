@@ -26,4 +26,5 @@ rem
 rem Build tragets. Valid targets are "lib", "examples", "tests"
 rem Default is to build all
 rem
-if "%~1"=="" (msbuild "%~dp0build.proj") else (msbuild -target:%1 "%~dp0build.proj")
+
+if "%~1"=="" (msbuild "%~dp0fab\msc\build.proj" ) else (msbuild -target:%1 "%~dp0fab\msc\build.proj")

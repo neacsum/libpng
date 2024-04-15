@@ -3,7 +3,8 @@
   "git": "git@github.com:neacsum/libpng.git",
   "https": "https://github.com/neacsum/libpng.git",
   "build": [
-    {"cmd": "build.bat", "args": ["lib"]}
+    {"os": "linux", "cmd": "cmake", "args": ["--workflow", "--preset", "gcc"]},
+    {"os": "windows", "cmd": "build.bat", "args": ["lib"]}
   ], 
   "depends": [
     {

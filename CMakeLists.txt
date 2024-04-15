@@ -25,8 +25,7 @@
 # For conditions of distribution and use, see the disclaimer
 # and license in png.h
 
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(VERSION 3.1)
+cmake_minimum_required(VERSION 3.25)
 
 project(libpng C ASM)
 enable_testing()
@@ -46,11 +45,6 @@ include(GNUInstallDirs)
 # Allow users to specify location of zlib.
 # Useful if zlib is being built alongside this as a sub-project.
 option(PNG_BUILD_ZLIB "Custom zlib Location, else find_package is used" OFF)
-
-if(NOT PNG_BUILD_ZLIB)
-  find_package(ZLIB REQUIRED)
-  include_directories(${ZLIB_INCLUDE_DIRS})
-endif()
 
 if(UNIX AND NOT APPLE AND NOT BEOS AND NOT HAIKU AND NOT EMSCRIPTEN)
   find_library(M_LIBRARY m)
@@ -304,15 +298,15 @@ if(NOT AWK OR ANDROID OR IOS)
   add_custom_target(genfiles) # Dummy
 else()
   # Copy the awk scripts, converting their line endings to Unix (LF)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/checksym.awk
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/checksym.awk
                  ${CMAKE_CURRENT_BINARY_DIR}/scripts/checksym.awk
                  @ONLY
                  NEWLINE_STYLE LF)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/options.awk
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/options.awk
                  ${CMAKE_CURRENT_BINARY_DIR}/scripts/options.awk
                  @ONLY
                  NEWLINE_STYLE LF)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/dfn.awk
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/dfn.awk
                  ${CMAKE_CURRENT_BINARY_DIR}/scripts/dfn.awk
                  @ONLY
                  NEWLINE_STYLE LF)
@@ -676,7 +670,7 @@ function(png_add_test)
   set(TEST_OPTIONS "${_PAT_OPTIONS}")
   set(TEST_FILES "${_PAT_FILES}")
 
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/scripts/test.cmake.in"
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/test.cmake.in"
                  "${CMAKE_CURRENT_BINARY_DIR}/tests/${_PAT_NAME}.cmake"
                  @ONLY)
   add_test(NAME "${_PAT_NAME}"
@@ -914,13 +908,13 @@ function(create_symlink DEST_FILE)
 endfunction()
 
 # Create source generation scripts.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/genchk.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/genchk.cmake.in
                ${CMAKE_CURRENT_BINARY_DIR}/scripts/genchk.cmake
                @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/genout.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/genout.cmake.in
                ${CMAKE_CURRENT_BINARY_DIR}/scripts/genout.cmake
                @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/gensrc.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/gensrc.cmake.in
                ${CMAKE_CURRENT_BINARY_DIR}/scripts/gensrc.cmake
                @ONLY)
 
@@ -939,11 +933,11 @@ if(NOT WIN32 OR CYGWIN OR MINGW)
   set(libdir      ${CMAKE_INSTALL_FULL_LIBDIR})
   set(includedir  ${CMAKE_INSTALL_FULL_INCLUDEDIR})
   set(LIBS        "-lz -lm")
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libpng.pc.in
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/libpng.pc.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${PNGLIB_NAME}.pc
                  @ONLY)
   create_symlink(libpng.pc FILE ${PNGLIB_NAME}.pc)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libpng-config.in
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/extras/scripts/libpng-config.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${PNGLIB_NAME}-config
                  @ONLY)
   create_symlink(libpng-config FILE ${PNGLIB_NAME}-config)

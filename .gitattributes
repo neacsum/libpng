@@ -1,0 +1,8 @@
+* text eol=lf
+*.tgt -text
+*.png -text
+*.dsp -text
+*.dsw -text
+*.wpj -text
+*.rc text=auto
+

@@ -75,12 +75,17 @@
 #include <stdio.h>
 #include <math.h>
 
-/* Normally use <png.h> here to get the installed libpng, but this is done to
- * ensure the code picks up the local libpng implementation:
- */
-#include "../../png.h"
+#ifdef _MSC_VER
+#include <io.h>
+#include <fcntl.h>
+#endif
 
-#if defined(PNG_SIMPLIFIED_WRITE_SUPPORTED) && defined(PNG_STDIO_SUPPORTED)
+#include <png/png.h>
+
+#if !defined(PNG_SIMPLIFIED_WRITE_SUPPORTED) || !defined(PNG_STDIO_SUPPORTED)
+#error("Missing required libpng features")
+#endif
+
 
 static const struct color
 {
@@ -815,6 +820,9 @@ main(int argc, const char **argv)
          }
 
          /* Write the result (to stdout) */
+#ifdef _MSC_VER
+         _setmode (_fileno (stdout), _O_BINARY);
+#endif
          if (png_image_write_to_stdio(&image, stdout, convert_to_8bit,
              buffer, 0/*row_stride*/, NULL/*colormap*/))
          {
@@ -878,4 +886,3 @@ main(int argc, const char **argv)
 
    return 1;
 }
-#endif /* SIMPLIFIED_WRITE && STDIO */

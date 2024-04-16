@@ -24,7 +24,7 @@
     <ClInclude Include="$(SolutionDir)include\pngpriv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)include\pngconf.h">
+    <ClInclude Include="..\..\include\png\pngconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)include\pngdebug.h">

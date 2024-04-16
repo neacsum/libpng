@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)src\pngvalid.c">
+    <ClCompile Include="..\..\tests\pngvalid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

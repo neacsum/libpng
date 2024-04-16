@@ -13,6 +13,10 @@
  * transforms.
  */
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,7 +34,7 @@
 #ifdef PNG_FREESTANDING_TESTS
 #  include <png.h>
 #else
-#  include "../../png.h"
+#  include <png/png.h>
 #endif
 
 #ifndef PNG_SETJMP_SUPPORTED

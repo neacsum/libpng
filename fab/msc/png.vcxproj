@@ -147,7 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)include\pngconf.h" />
+    <ClInclude Include="..\..\include\png\pngconf.h" />
     <ClInclude Include="$(SolutionDir)include\pngdebug.h" />
     <ClInclude Include="$(SolutionDir)include\pnginfo.h" />
     <ClInclude Include="$(SolutionDir)include\pngpriv.h" />

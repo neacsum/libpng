@@ -2,30 +2,76 @@
   "version": 6,
   "configurePresets":[
     {
-      "name": "gcc",
-      "displayName": "gcc Compiler",
-      "binaryDir": "${sourceDir}/build"
+      "name": "debug",
+      "displayName": "Debug Config",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables" : {
+        "CMAKE_BUILD_TYPE":"Debug"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release Config",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables" : {
+        "CMAKE_BUILD_TYPE":"Release"
+      }
     }
   ],
 
   "buildPresets":[
     {
-      "name": "gcc",
-      "configurePreset": "gcc"
+      "name": "all_debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "all_release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "lib_debug",
+      "configurePreset": "debug",
+	    "targets": "png"
     }
   ],
 
   "workflowPresets":[
     {
-      "name": "gcc",
+      "name": "all_debug",
       "steps": [
         {
           "type": "configure",
-          "name": "gcc"
+          "name": "debug"
         },
         {
           "type": "build",
-          "name": "gcc"
+          "name": "all_debug"
+        }
+      ]
+    },
+    {
+      "name": "all_release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "release"
+        },
+        {
+          "type": "build",
+          "name": "all_release"
+        }
+      ]
+    },
+    {
+      "name": "lib_debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "debug"
+        },
+        {
+          "type": "build",
+          "name": "lib_debug"
         }
       ]
     }

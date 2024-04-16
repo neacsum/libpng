@@ -15,7 +15,7 @@
  * For a more extensive example that uses the transforms see
  * contrib/libtests/pngimage.c in the libpng distribution.
  */
-#include "pnglibconf.h" /* To find how libpng was configured. */
+#include <png/libconf.h> /* To find how libpng was configured. */
 
 #ifdef PNG_PNGCP_TIMING_SUPPORTED
    /* WARNING:
@@ -39,6 +39,11 @@
 #  include <config.h>
 #endif
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
+#endif
+
 #include <stdio.h>
 
 /* Define the following to use this test against your installed libpng, rather
@@ -47,7 +52,7 @@
 #ifdef PNG_FREESTANDING_TESTS
 #  include <png.h>
 #else
-#  include "../../png.h"
+#  include <png/png.h>
 #endif
 
 #if PNG_LIBPNG_VER < 10700
@@ -62,7 +67,10 @@
 #  endif /* INFO_IMAGE */
 #endif /* pre 1.7.0 */
 
-#if (defined(PNG_READ_PNG_SUPPORTED)) && (defined(PNG_WRITE_PNG_SUPPORTED))
+#if !defined(PNG_READ_PNG_SUPPORTED) || !defined(PNG_WRITE_PNG_SUPPORTED)
+#error("no support for png_read/write_image")
+#endif
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,10 +78,39 @@
 #include <limits.h>
 #include <assert.h>
 
+#ifndef _MSC_VER
 #include <unistd.h>
-#include <sys/stat.h>
+#endif
 
-#include <zlib.h>
+#include <sys/stat.h>
+#ifdef _MSC_VER
+/* Windows does not define the S_ISREG and S_ISDIR macros in stat.h, so we do it here.
+   We have to define _CRT_INTERNAL_NONSTDC_NAMES 1 before #including sys/stat
+   in order for Microsoft's stat.h to define names like S_IFMT, S_IFREG, and S_IFDIR,
+   rather than just defining  _S_IFMT, _S_IFREG, and _S_IFDIR as it normally does.
+*/
+#if !defined(S_ISDIR) && defined(_S_IFMT) && defined(_S_IFDIR)
+#define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
+
+#include <io.h> //for _access
+#include <fcntl.h> //for _O_BINARY
+
+#ifndef F_OK
+#define F_OK 0
+#endif
+
+#ifndef W_OK
+#define W_OK 2
+#endif
+
+#ifndef R_OK
+#define R_OK 4
+#endif
+
+#endif
+
+#endif
+#include <zlib/zlib.h>
 
 #ifndef PNG_SETJMP_SUPPORTED
 #  include <setjmp.h> /* because png.h did *not* include this */
@@ -2348,7 +2385,13 @@ main(int argc, char **argv)
                outfile = argv[argc-1];
          }
 
-         ret = cppng(&d, infile, outfile);
+#ifdef _MSC_VER
+         if (!infile)
+          _setmode (fileno (stdin), _O_BINARY);
+         if (!outfile)
+           _setmode (fileno (stdout), _O_BINARY);
+#endif
+         ret = cppng (&d, infile, outfile);
 
          if (ret)
          {
@@ -2443,11 +2486,3 @@ main(int argc, char **argv)
       return errors != 0;
    }
 }
-#else /* !READ_PNG || !WRITE_PNG */
-int
-main(void)
-{
-   fprintf(stderr, "pngcp: no support for png_read/write_image\n");
-   return 77;
-}
-#endif /* !READ_PNG || !WRITE_PNG */

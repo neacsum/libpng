@@ -13,7 +13,7 @@
  */
 #include <stdio.h>
 
-#include <zlib.h>
+#include <zlib/zlib.h>
 
 static int
 read_one_file(FILE *ip, const char *name)

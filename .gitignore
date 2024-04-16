@@ -4,6 +4,7 @@
 # Precompiled headers
 *.gch
 *.pch
+*.ipch
 
 # Object files
 *.slo
@@ -39,6 +40,9 @@
 *.su
 
 # Libpng configuration and build artifacts
+build/
+bin/
+
 .deps/
 .dirstamp
 Makefile
@@ -66,10 +70,6 @@ vers.out
 png-fix-itxt
 pngcp
 pngfix
-pngimage
-pngstest
-pngtest
-pngunknown
 pngvalid
 timepng
 pngout.png
@@ -80,6 +80,8 @@ out/
 .vs/
 build/
 /lib
+/bin
 include/zlib
 *.user
+*.bak
 

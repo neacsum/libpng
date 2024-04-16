@@ -2019,7 +2019,7 @@ static void (* const gpc_fn_colormapped[8/*in*/][8/*out*/])
  * gpc_error_to_colormap.
  */
 #if PNG_FORMAT_FLAG_COLORMAP == 8 /* extra check also required */
-#  include <pngstest-errors.h> /* machine generated */
+#  include "pngstest-errors.h" /* machine generated */
 #endif /* COLORMAP flag check */
 #endif /* flag checks */
 
@@ -3685,7 +3685,7 @@ main(int argc, char **argv)
    {
       unsigned int in;
 
-      printf("/* contrib/libtests/pngstest-errors.h\n");
+      printf("/* tests/pngstest-errors.h\n");
       printf(" *\n");
       printf(" * BUILT USING:" PNG_HEADER_VERSION_STRING);
       printf(" *\n");
@@ -3699,7 +3699,7 @@ main(int argc, char **argv)
       printf(" *    pngstest --accumulate\n");
       printf(" *\n");
       printf(" * on as many PNG files as possible; at least PNGSuite and\n");
-      printf(" * contrib/libtests/testpngs.\n");
+      printf(" * tests/testpngs.\n");
       printf(" */\n");
 
       printf("static png_uint_16 gpc_error[16/*in*/][16/*out*/][4/*a*/] =\n");

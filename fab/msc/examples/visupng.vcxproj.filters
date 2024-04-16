@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)examples/visupng/PngFile.c">
+    <ClCompile Include="..\..\..\examples\visupng\PngFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)examples/visupng/VisualPng.c">
+    <ClCompile Include="..\..\..\examples\visupng\VisualPng.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

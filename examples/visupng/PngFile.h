@@ -17,8 +17,8 @@ void PngFileInitialize (HWND hwnd) ;
 BOOL PngFileOpenDlg (HWND hwnd, char* pstrFileName, char* pstrTitleName) ;
 BOOL PngFileSaveDlg (HWND hwnd, char* pstrFileName, char* pstrTitleName) ;
 
-BOOL PngLoadImage (char* pstrFileName, png_byte **ppbImageData,
-                   int *piWidth, int *piHeight, int *piChannels, png_color *pBkgColor);
+BOOL PngLoadImage (char* pstrFileName, png_byte** ppbImageData, png_uint_32* piWidth,
+                   png_uint_32* piHeight, int* piChannels, png_color* pBkgColor);
 BOOL PngSaveImage (char* pstrFileName, png_byte *pDiData,
                    int iWidth, int iHeight, png_color BkgColor);
 

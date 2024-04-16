@@ -52,9 +52,8 @@ BOOL BuildPngList (char* pstrPathName, char **ppFileList, int *pFileCount,
 BOOL SearchPngList (char* pFileList, int FileCount, int *pFileIndex,
         char* pstrPrevName, char* pstrNextName);
 
-BOOL LoadImageFile(HWND hwnd, char* pstrPathName,
-        png_byte **ppbImage, int *pxImgSize, int *pyImgSize, int *piChannels,
-        png_color *pBkgColor);
+BOOL LoadImageFile(HWND hwnd, char* pstrPathName, png_byte** ppbImage, png_uint_32* pxImgSize,
+                    png_uint_32* pyImgSize, int* piChannels, png_color *pBkgColor);
 
 BOOL DisplayImage (HWND hwnd, BYTE **ppDib,
         BYTE **ppDiData, int cxWinSize, int cyWinSize,
@@ -71,9 +70,9 @@ BOOL FillBitmap (
 
 /* a few global variables */
 
-static char *szProgName = PROGNAME;
-static char *szAppName = LONGNAME;
-static char *szIconName = PROGNAME;
+static const char *szProgName = PROGNAME;
+static const char *szAppName = LONGNAME;
+static const char *szIconName = PROGNAME;
 static char szCmdFileName [MAX_PATH];
 
 /* MAIN routine */
@@ -158,7 +157,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam,
     static BITMAPINFOHEADER  *pbmih;
     static BYTE              *pbImage;
     static int                cxWinSize, cyWinSize;
-    static int                cxImgSize, cyImgSize;
+    static png_uint_32        cxImgSize, cyImgSize;
     static int                cImgChannels;
     static png_color          bkgColor = {127, 127, 127};
 
@@ -660,9 +659,8 @@ BOOL SearchPngList (
  *-----------------
  */
 
-BOOL LoadImageFile (HWND hwnd, char* pstrPathName,
-                png_byte **ppbImage, int *pxImgSize, int *pyImgSize,
-                int *piChannels, png_color *pBkgColor)
+BOOL LoadImageFile (HWND hwnd, char* pstrPathName, png_byte** ppbImage, png_uint_32* pxImgSize,
+                    png_uint_32* pyImgSize, int *piChannels, png_color *pBkgColor)
 {
     static char szTmp [MAX_PATH];
 
@@ -860,7 +858,7 @@ BOOL FillBitmap (
               szProgName, MB_ICONEXCLAMATION | MB_OK);
 
         }
-        pStretchedImage = malloc (cImgChannels * cxNewSize * cyNewSize);
+        pStretchedImage = (BYTE*)malloc (cImgChannels * cxNewSize * cyNewSize);
         pImg = pStretchedImage;
 
         for (yNew = 0; yNew < cyNewSize; yNew++)

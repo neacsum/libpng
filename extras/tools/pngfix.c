@@ -10,6 +10,11 @@
  * Tool to check and fix the zlib inflate 'too far back' problem.
  * See the usage message for more information.
  */
+
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,7 +46,7 @@
 #ifdef PNG_FREESTANDING_TESTS
 #  include <png.h>
 #else
-#  include "../../png.h"
+#  include <png/png.h>
 #endif
 
 #if PNG_LIBPNG_VER < 10603 /* 1.6.3 */
@@ -63,11 +68,7 @@
    /* We must ensure that zlib uses 'const' in declarations. */
 #  define ZLIB_CONST
 #endif
-#include <zlib.h>
-#ifdef const
-   /* zlib.h sometimes #defines const to nothing, undo this. */
-#  undef const
-#endif
+#include <zlib/zlib.h>
 
 /* zlib.h has mediocre z_const use before 1.2.6, this stuff is for compatibility
  * with older builds.

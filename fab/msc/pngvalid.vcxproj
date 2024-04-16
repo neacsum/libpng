@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)src\pngvalid.c" />
+    <ClCompile Include="..\..\tests\pngvalid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)include\zlib\zlib.h" />

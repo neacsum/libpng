@@ -36,7 +36,7 @@
     <ClInclude Include="$(SolutionDir)include\pngstruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)include\pnglibconf.h">
+    <ClInclude Include="..\..\include\png\libconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

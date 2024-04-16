@@ -54,7 +54,7 @@ libpng.vers
 libpng16-config
 libpng16.pc
 libtool
-pnglibconf.[ch]
+pnglibconf.c
 pnglibconf.dfn
 pnglibconf.out
 pnglibconf.pre

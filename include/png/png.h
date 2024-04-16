@@ -323,11 +323,11 @@
 /* Library configuration: these options cannot be changed after
  * the library has been built.
  */
-#ifndef PNGLCONF_H
+#ifndef PNG_LIBCONF_H
 /* If pnglibconf.h is missing, you can
  * copy scripts/pnglibconf.h.prebuilt to pnglibconf.h
  */
-#   include "pnglibconf.h"
+#   include "libconf.h"
 #endif
 
 #ifndef PNG_VERSION_INFO_ONLY

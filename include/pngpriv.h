@@ -68,8 +68,8 @@
  * are not internal definitions may be required.  This is handled below just
  * before png.h is included, but load the configuration now if it is available.
  */
-#if __has_include("pnglibconf.h")
-#  include "pnglibconf.h"
+#if __has_include("png/libconf.h")
+#  include <png/libconf.h>
 #endif
 
 /* Local renames may change non-exported API functions from png.h */

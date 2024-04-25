@@ -22,12 +22,12 @@
 
 static OPENFILENAME ofn;
 
-static png_structp png_ptr = NULL;
+static png_struct* png_ptr = NULL;
 static png_infop info_ptr = NULL;
 
 /* cexcept interface */
 
-static void png_cexcept_error (png_structp png_ptr, png_const_charp msg)
+static void png_cexcept_error (png_struct* png_ptr, png_const_charp msg)
 {
 #ifdef PNG_CONSOLE_IO_SUPPORTED
   fprintf (stderr, "libpng error: %s\n", msg);
@@ -387,7 +387,7 @@ BOOL PngSaveImage (char* pstrFileName, png_byte* pDiData, int iWidth, int iHeigh
 
 #ifndef PNG_STDIO_SUPPORTED
 
-static void png_read_data (png_structp png_ptr, png_bytep data, size_t length)
+static void png_read_data (png_struct* png_ptr, png_bytep data, size_t length)
 {
   size_t check;
 
@@ -402,7 +402,7 @@ static void png_read_data (png_structp png_ptr, png_bytep data, size_t length)
   }
 }
 
-static void png_write_data (png_structp png_ptr, png_bytep data, size_t length)
+static void png_write_data (png_struct* png_ptr, png_bytep data, size_t length)
 {
   png_uint_32 check;
 
@@ -413,7 +413,7 @@ static void png_write_data (png_structp png_ptr, png_bytep data, size_t length)
   }
 }
 
-static void png_flush (png_structp png_ptr)
+static void png_flush (png_struct* png_ptr)
 {
   FILE* io_ptr;
   io_ptr = (FILE*)CVT_PTR ((png_ptr->io_ptr));

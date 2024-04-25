@@ -418,7 +418,7 @@ png_push_read_chunk(png_structrp png_ptr, png_inforp info_ptr)
 }
 
 void PNGCBAPI
-png_push_fill_buffer(png_structp png_ptr, png_bytep buffer, size_t length)
+png_push_fill_buffer(png_struct* png_ptr, png_bytep buffer, size_t length)
 {
    png_bytep ptr;
 

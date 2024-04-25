@@ -17,7 +17,7 @@
 #if PNG_INTEL_SSE_IMPLEMENTATION > 0
 
 void
-png_init_filter_functions_sse2(png_structp pp, unsigned int bpp)
+png_init_filter_functions_sse2(png_struct* pp, unsigned int bpp)
 {
    /* The techniques used to implement each of these filters in SSE operate on
     * one pixel at a time.

@@ -1211,7 +1211,7 @@ png_get_chunk_cache_max(png_const_structrp png_ptr)
 }
 
 /* This function was added to libpng 1.4.1 */
-png_alloc_size_t PNGAPI
+size_t PNGAPI
 png_get_chunk_malloc_max(png_const_structrp png_ptr)
 {
    return (png_ptr ? png_ptr->user_chunk_malloc_max : 0);
@@ -1236,7 +1236,7 @@ png_get_io_chunk_type(png_const_structrp png_ptr)
 #ifdef PNG_CHECK_FOR_INVALID_INDEX_SUPPORTED
 #  ifdef PNG_GET_PALETTE_MAX_SUPPORTED
 int PNGAPI
-png_get_palette_max(png_const_structp png_ptr, png_const_infop info_ptr)
+png_get_palette_max(const png_struct* png_ptr, png_const_infop info_ptr)
 {
    if (png_ptr != NULL && info_ptr != NULL)
       return png_ptr->num_palette_max;

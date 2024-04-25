@@ -47,7 +47,7 @@ png_destroy_png_struct(png_structrp png_ptr)
  * have the ability to do that.
  */
 PNG_FUNCTION(png_voidp,PNGAPI
-png_calloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
+png_calloc,(png_const_structrp png_ptr, size_t size),PNG_ALLOCATED)
 {
    png_voidp ret;
 
@@ -65,7 +65,7 @@ png_calloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
  * if the allocation cannot be done (for any reason.)
  */
 PNG_FUNCTION(png_voidp /* PRIVATE */,
-png_malloc_base,(png_const_structrp png_ptr, png_alloc_size_t size),
+png_malloc_base,(png_const_structrp png_ptr, size_t size),
     PNG_ALLOCATED)
 {
    /* Moved to png_malloc_base from png_malloc_default in 1.6.0; the DOS
@@ -109,7 +109,7 @@ static png_voidp
 png_malloc_array_checked(png_const_structrp png_ptr, int nelements,
     size_t element_size)
 {
-   png_alloc_size_t req = (png_alloc_size_t)nelements; /* known to be > 0 */
+   size_t req = (size_t)nelements; /* known to be > 0 */
 
    if (req <= PNG_SIZE_MAX/element_size)
       return png_malloc_base(png_ptr, req * element_size);
@@ -169,7 +169,7 @@ png_realloc_array,(png_const_structrp png_ptr, png_const_voidp old_array,
  * function png_malloc_default is also provided.
  */
 PNG_FUNCTION(png_voidp,PNGAPI
-png_malloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
+png_malloc,(png_const_structrp png_ptr, size_t size),PNG_ALLOCATED)
 {
    png_voidp ret;
 
@@ -186,7 +186,7 @@ png_malloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
 
 #ifdef PNG_USER_MEM_SUPPORTED
 PNG_FUNCTION(png_voidp,PNGAPI
-png_malloc_default,(png_const_structrp png_ptr, png_alloc_size_t size),
+png_malloc_default,(png_const_structrp png_ptr, size_t size),
     PNG_ALLOCATED PNG_DEPRECATED)
 {
    png_voidp ret;
@@ -209,7 +209,7 @@ png_malloc_default,(png_const_structrp png_ptr, png_alloc_size_t size),
  * png_error, if it fails to allocate the requested memory.
  */
 PNG_FUNCTION(png_voidp,PNGAPI
-png_malloc_warn,(png_const_structrp png_ptr, png_alloc_size_t size),
+png_malloc_warn,(png_const_structrp png_ptr, size_t size),
     PNG_ALLOCATED)
 {
    if (png_ptr != NULL)

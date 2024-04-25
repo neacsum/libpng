@@ -131,7 +131,7 @@ static char tIME_string[PNG_tIME_STRING_LENGTH] = "tIME chunk is not present";
 #define png_convert_to_rfc1123_buffer(ts, t) tIME_to_str(read_ptr, ts, t)
 
 static int
-tIME_to_str(png_structp png_ptr, png_charp ts, png_const_timep t)
+tIME_to_str(png_struct* png_ptr, png_charp ts, png_const_timep t)
 {
    png_const_charp str = png_convert_to_rfc1123(png_ptr, t);
 
@@ -174,7 +174,7 @@ static int status_dots_requested = 0;
 static int status_dots = 1;
 
 static void PNGCBAPI
-read_row_callback(png_structp png_ptr, png_uint_32 row_number, int pass)
+read_row_callback(png_struct* png_ptr, png_uint_32 row_number, int pass)
 {
    if (png_ptr == NULL || row_number > PNG_UINT_31_MAX)
       return;
@@ -199,7 +199,7 @@ read_row_callback(png_structp png_ptr, png_uint_32 row_number, int pass)
 
 #ifdef PNG_WRITE_SUPPORTED
 static void PNGCBAPI
-write_row_callback(png_structp png_ptr, png_uint_32 row_number, int pass)
+write_row_callback(png_struct* png_ptr, png_uint_32 row_number, int pass)
 {
    if (png_ptr == NULL || row_number > PNG_UINT_31_MAX || pass > 7)
       return;
@@ -213,7 +213,7 @@ write_row_callback(png_structp png_ptr, png_uint_32 row_number, int pass)
 /* Example of using a user transform callback (doesn't do anything at present).
  */
 static void PNGCBAPI
-read_user_callback(png_structp png_ptr, png_row_infop row_info, png_bytep data)
+read_user_callback(png_struct* png_ptr, png_row_infop row_info, png_bytep data)
 {
    PNG_UNUSED(png_ptr)
    PNG_UNUSED(row_info)
@@ -229,7 +229,7 @@ read_user_callback(png_structp png_ptr, png_row_infop row_info, png_bytep data)
 static png_uint_32 zero_samples;
 
 static void PNGCBAPI
-count_zero_samples(png_structp png_ptr, png_row_infop row_info, png_bytep data)
+count_zero_samples(png_struct* png_ptr, png_row_infop row_info, png_bytep data)
 {
    png_bytep dp = data;
    if (png_ptr == NULL)
@@ -348,10 +348,10 @@ count_zero_samples(png_structp png_ptr, png_row_infop row_info, png_bytep data)
 
 #ifdef PNG_IO_STATE_SUPPORTED
 void
-pngtest_check_io_state(png_structp png_ptr, size_t data_length,
+pngtest_check_io_state(png_struct* png_ptr, size_t data_length,
     png_uint_32 io_op);
 void
-pngtest_check_io_state(png_structp png_ptr, size_t data_length,
+pngtest_check_io_state(png_struct* png_ptr, size_t data_length,
     png_uint_32 io_op)
 {
    png_uint_32 io_state = png_get_io_state(png_ptr);
@@ -389,7 +389,7 @@ pngtest_check_io_state(png_structp png_ptr, size_t data_length,
 #endif
 
 static void PNGCBAPI
-pngtest_read_data(png_structp png_ptr, png_bytep data, size_t length)
+pngtest_read_data(png_struct* png_ptr, png_bytep data, size_t length)
 {
    size_t check = 0;
    png_voidp io_ptr;
@@ -415,7 +415,7 @@ pngtest_read_data(png_structp png_ptr, png_bytep data, size_t length)
 
 #ifdef PNG_WRITE_FLUSH_SUPPORTED
 static void PNGCBAPI
-pngtest_flush(png_structp png_ptr)
+pngtest_flush(png_struct* png_ptr)
 {
    /* Do nothing; fflush() is said to be just a waste of energy. */
    PNG_UNUSED(png_ptr)   /* Stifle compiler warning */
@@ -428,7 +428,7 @@ pngtest_flush(png_structp png_ptr)
  * than changing the library.
  */
 static void PNGCBAPI
-pngtest_write_data(png_structp png_ptr, png_bytep data, size_t length)
+pngtest_write_data(png_struct* png_ptr, png_bytep data, size_t length)
 {
    size_t check;
 
@@ -456,7 +456,7 @@ typedef struct
 }  pngtest_error_parameters;
 
 static void PNGCBAPI
-pngtest_warning(png_structp png_ptr, png_const_charp message)
+pngtest_warning(png_struct* png_ptr, png_const_charp message)
 {
    const char *name = "UNKNOWN (ERROR!)";
    pngtest_error_parameters *test =
@@ -476,7 +476,7 @@ pngtest_warning(png_structp png_ptr, png_const_charp message)
  * error function pointer in png_set_error_fn().
  */
 static void PNGCBAPI
-pngtest_error(png_structp png_ptr, png_const_charp message)
+pngtest_error(png_struct* png_ptr, png_const_charp message)
 {
    ++error_count;
 
@@ -502,7 +502,7 @@ pngtest_error(png_structp png_ptr, png_const_charp message)
  */
 typedef struct memory_information
 {
-   png_alloc_size_t          size;
+   size_t          size;
    png_voidp                 pointer;
    struct memory_information *next;
 } memory_information;
@@ -514,12 +514,12 @@ static int maximum_allocation = 0;
 static int total_allocation = 0;
 static int num_allocations = 0;
 
-png_voidp PNGCBAPI png_debug_malloc PNGARG((png_structp png_ptr,
-    png_alloc_size_t size));
-void PNGCBAPI png_debug_free PNGARG((png_structp png_ptr, png_voidp ptr));
+png_voidp PNGCBAPI png_debug_malloc PNGARG((png_struct* png_ptr,
+    size_t size));
+void PNGCBAPI png_debug_free PNGARG((png_struct* png_ptr, png_voidp ptr));
 
 png_voidp
-PNGCBAPI png_debug_malloc(png_structp png_ptr, png_alloc_size_t size)
+PNGCBAPI png_debug_malloc(png_struct* png_ptr, size_t size)
 {
 
    /* png_malloc has already tested for NULL; png_create_struct calls
@@ -574,7 +574,7 @@ PNGCBAPI png_debug_malloc(png_structp png_ptr, png_alloc_size_t size)
 
 /* Free a pointer.  It is removed from the list at the same time. */
 void PNGCBAPI
-png_debug_free(png_structp png_ptr, png_voidp ptr)
+png_debug_free(png_struct* png_ptr, png_voidp ptr)
 {
    if (png_ptr == NULL)
       fprintf(STDERR, "NULL pointer to png_debug_free.\n");
@@ -663,7 +663,7 @@ init_callback_info(png_const_infop info_ptr)
 }
 
 static int
-set_location(png_structp png_ptr, struct user_chunk_data *data, int what)
+set_location(png_struct* png_ptr, struct user_chunk_data *data, int what)
 {
    int location;
 
@@ -754,7 +754,7 @@ read_user_chunk_callback(png_struct *png_ptr, png_unknown_chunkp chunk)
 
 #ifdef PNG_WRITE_SUPPORTED
 static void
-write_sTER_chunk(png_structp write_ptr)
+write_sTER_chunk(png_struct* write_ptr)
 {
    png_byte sTER[5] = {115,  84,  69,  82, '\0'};
 
@@ -765,7 +765,7 @@ write_sTER_chunk(png_structp write_ptr)
 }
 
 static void
-write_vpAg_chunk(png_structp write_ptr)
+write_vpAg_chunk(png_struct* write_ptr)
 {
    png_byte vpAg[5] = {118, 112,  65, 103, '\0'};
 
@@ -784,7 +784,7 @@ write_vpAg_chunk(png_structp write_ptr)
 }
 
 static void
-write_chunks(png_structp write_ptr, int location)
+write_chunks(png_struct* write_ptr, int location)
 {
    int i;
 
@@ -815,7 +815,7 @@ write_chunks(png_structp write_ptr, int location)
  */
 #ifdef PNG_TEXT_SUPPORTED
 static void
-pngtest_check_text_support(png_structp png_ptr, png_textp text_ptr,
+pngtest_check_text_support(png_struct* png_ptr, png_textp text_ptr,
     int num_text)
 {
    while (num_text > 0)
@@ -858,17 +858,17 @@ test_one_file(const char *inname, const char *outname)
    static png_FILE_p fpin;
    static png_FILE_p fpout;  /* "static" prevents setjmp corruption */
    pngtest_error_parameters error_parameters;
-   png_structp read_ptr;
+   png_struct* read_ptr;
    png_infop read_info_ptr, end_info_ptr;
 #ifdef PNG_WRITE_SUPPORTED
-   png_structp write_ptr;
+   png_struct* write_ptr;
    png_infop write_info_ptr;
    png_infop write_end_info_ptr;
 #ifdef PNG_WRITE_FILTER_SUPPORTED
    int interlace_preserved = 1;
 #endif /* WRITE_FILTER */
 #else /* !WRITE */
-   png_structp write_ptr = NULL;
+   png_struct* write_ptr = NULL;
    png_infop write_info_ptr = NULL;
    png_infop write_end_info_ptr = NULL;
 #endif /* !WRITE */
@@ -1827,7 +1827,7 @@ main(int argc, char *argv[])
    int multiple = 0;
    int ierror = 0;
 
-   png_structp dummy_ptr;
+   png_struct* dummy_ptr;
 
    fprintf(STDERR, "\n Testing libpng version %s\n", PNG_LIBPNG_VER_STRING);
    fprintf(STDERR, "   with zlib   version %s\n", ZLIB_VERSION);

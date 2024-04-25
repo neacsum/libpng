@@ -996,7 +996,7 @@ PNG_INTERNAL_FUNCTION(int,png_user_version_check,(png_structrp png_ptr,
  * png_error (although that would be a bug in the application implementation.)
  */
 PNG_INTERNAL_FUNCTION(png_voidp,png_malloc_base,(png_const_structrp png_ptr,
-   png_alloc_size_t size),PNG_ALLOCATED);
+   size_t size),PNG_ALLOCATED);
 
 #if defined(PNG_TEXT_SUPPORTED) || defined(PNG_sPLT_SUPPORTED) ||\
    defined(PNG_STORE_UNKNOWN_CHUNKS_SUPPORTED)
@@ -1021,7 +1021,7 @@ PNG_INTERNAL_FUNCTION(png_voidp,png_realloc_array,(png_const_structrp png_ptr,
  * restriction so libpng has to assume that the 'free' handler, at least, might
  * call png_error.
  */
-PNG_INTERNAL_FUNCTION(png_structp,png_create_png_struct,
+PNG_INTERNAL_FUNCTION(png_struct*,png_create_png_struct,
    (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn,
     png_error_ptr warn_fn, png_voidp mem_ptr, png_malloc_ptr malloc_fn,
     png_free_ptr free_fn),PNG_ALLOCATED);
@@ -1045,20 +1045,20 @@ PNG_INTERNAL_FUNCTION(void,png_zfree,(voidpf png_ptr, voidpf ptr),PNG_EMPTY);
  * PNGCBAPI at 1.5.0
  */
 
-PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_default_read_data,(png_structp png_ptr,
+PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_default_read_data,(png_struct* png_ptr,
     png_bytep data, size_t length),PNG_EMPTY);
 
 #ifdef PNG_PROGRESSIVE_READ_SUPPORTED
-PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_push_fill_buffer,(png_structp png_ptr,
+PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_push_fill_buffer,(png_struct* png_ptr,
     png_bytep buffer, size_t length),PNG_EMPTY);
 #endif
 
-PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_default_write_data,(png_structp png_ptr,
+PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_default_write_data,(png_struct* png_ptr,
     png_bytep data, size_t length),PNG_EMPTY);
 
 #ifdef PNG_WRITE_FLUSH_SUPPORTED
 #  ifdef PNG_STDIO_SUPPORTED
-PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_default_flush,(png_structp png_ptr),
+PNG_INTERNAL_FUNCTION(void PNGCBAPI,png_default_flush,(png_struct* png_ptr),
    PNG_EMPTY);
 #  endif
 #endif
@@ -1117,7 +1117,7 @@ PNG_INTERNAL_FUNCTION(void,png_write_PLTE,(png_structrp png_ptr,
    png_const_colorp palette, png_uint_32 num_pal),PNG_EMPTY);
 
 PNG_INTERNAL_FUNCTION(void,png_compress_IDAT,(png_structrp png_ptr,
-   png_const_bytep row_data, png_alloc_size_t row_data_length, int flush),
+   png_const_bytep row_data, size_t row_data_length, int flush),
    PNG_EMPTY);
 
 PNG_INTERNAL_FUNCTION(void,png_write_IEND,(png_structrp png_ptr),PNG_EMPTY);
@@ -1361,7 +1361,7 @@ PNG_INTERNAL_FUNCTION(void,png_write_find_filter,(png_structrp png_ptr,
 
 #ifdef PNG_SEQUENTIAL_READ_SUPPORTED
 PNG_INTERNAL_FUNCTION(void,png_read_IDAT_data,(png_structrp png_ptr,
-   png_bytep output, png_alloc_size_t avail_out),PNG_EMPTY);
+   png_bytep output, size_t avail_out),PNG_EMPTY);
    /* Read 'avail_out' bytes of data from the IDAT stream.  If the output buffer
     * is NULL the function checks, instead, for the end of the stream.  In this
     * case a benign error will be issued if the stream end is not found or if
@@ -1733,7 +1733,7 @@ PNG_INTERNAL_FUNCTION(size_t,png_safecat,(png_charp buffer, size_t bufsize,
  * does unsigned values.
  */
 PNG_INTERNAL_FUNCTION(png_charp,png_format_number,(png_const_charp start,
-   png_charp end, int format, png_alloc_size_t number),PNG_EMPTY);
+   png_charp end, int format, size_t number),PNG_EMPTY);
 
 /* Convenience macro that takes an array: */
 #define PNG_FORMAT_NUMBER(buffer,format,number) \
@@ -1771,9 +1771,9 @@ PNG_INTERNAL_FUNCTION(void,png_warning_parameter,(png_warning_parameters p,
     * including the trailing '\0'.
     */
 PNG_INTERNAL_FUNCTION(void,png_warning_parameter_unsigned,
-   (png_warning_parameters p, int number, int format, png_alloc_size_t value),
+   (png_warning_parameters p, int number, int format, size_t value),
    PNG_EMPTY);
-   /* Use png_alloc_size_t because it is an unsigned type as big as any we
+   /* Use size_t because it is an unsigned type as big as any we
     * need to output.  Use the following for a signed value.
     */
 PNG_INTERNAL_FUNCTION(void,png_warning_parameter_signed,
@@ -2025,7 +2025,7 @@ PNG_INTERNAL_FUNCTION(void,png_build_gamma_table,(png_structrp png_ptr,
 /* The internal structure that png_image::opaque points to. */
 typedef struct png_control
 {
-   png_structp png_ptr;
+   png_struct* png_ptr;
    png_infop   info_ptr;
    png_voidp   error_buf;           /* Always a jmp_buf at present. */
 
@@ -2049,11 +2049,11 @@ typedef struct png_control
  * errors that might occur.  Returns true on success, false on failure (either
  * of the function or as a result of a png_error.)
  */
-PNG_INTERNAL_CALLBACK(void,png_safe_error,(png_structp png_ptr,
+PNG_INTERNAL_CALLBACK(void,png_safe_error,(png_struct* png_ptr,
    png_const_charp error_message),PNG_NORETURN);
 
 #ifdef PNG_WARNINGS_SUPPORTED
-PNG_INTERNAL_CALLBACK(void,png_safe_warning,(png_structp png_ptr,
+PNG_INTERNAL_CALLBACK(void,png_safe_warning,(png_struct* png_ptr,
    png_const_charp warning_message),PNG_EMPTY);
 #else
 #  define png_safe_warning 0/*dummy argument*/
@@ -2081,7 +2081,7 @@ PNG_INTERNAL_FUNCTION(void, png_image_free, (png_imagep image), PNG_EMPTY);
  * the generic code is used.
  */
 #ifdef PNG_FILTER_OPTIMIZATIONS
-PNG_INTERNAL_FUNCTION(void, PNG_FILTER_OPTIMIZATIONS, (png_structp png_ptr,
+PNG_INTERNAL_FUNCTION(void, PNG_FILTER_OPTIMIZATIONS, (png_struct* png_ptr,
    unsigned int bpp), PNG_EMPTY);
    /* Just declare the optimization that will be used */
 #else
@@ -2091,17 +2091,17 @@ PNG_INTERNAL_FUNCTION(void, PNG_FILTER_OPTIMIZATIONS, (png_structp png_ptr,
     */
 #  if PNG_ARM_NEON_OPT > 0
 PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_neon,
-   (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
+   (png_struct* png_ptr, unsigned int bpp), PNG_EMPTY);
 #endif
 
 #if PNG_MIPS_MSA_OPT > 0
 PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_msa,
-   (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
+   (png_struct* png_ptr, unsigned int bpp), PNG_EMPTY);
 #endif
 
 #  if PNG_INTEL_SSE_IMPLEMENTATION > 0
 PNG_INTERNAL_FUNCTION(void, png_init_filter_functions_sse2,
-   (png_structp png_ptr, unsigned int bpp), PNG_EMPTY);
+   (png_struct* png_ptr, unsigned int bpp), PNG_EMPTY);
 #  endif
 #endif
 

@@ -73,7 +73,7 @@ component(png_const_bytep row, png_uint_32 x, unsigned int c,
  * the pixel, and print the relevant information to stdout.
  */
 static void
-print_pixel(png_structp png_ptr, png_infop info_ptr, png_const_bytep row,
+print_pixel(png_struct* png_ptr, png_infop info_ptr, png_const_bytep row,
    png_uint_32 x)
 {
    unsigned int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
@@ -166,7 +166,7 @@ int main(int argc, const char **argv)
           * writes error messages to stderr.  Creating the png_struct is a
           * little tricky; just copy the following code.
           */
-         png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
+         png_struct* png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
             NULL, NULL, NULL);
 
          if (png_ptr != NULL)

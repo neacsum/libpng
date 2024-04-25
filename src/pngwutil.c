@@ -200,7 +200,7 @@ png_write_chunk(png_structrp png_ptr, png_const_bytep chunk_string,
  * so it only needs to be accurate if the size is less than 16384 bytes (the
  * point at which a lower LZ window size can be used.)
  */
-static png_alloc_size_t
+static size_t
 png_image_size(png_structrp png_ptr)
 {
    /* Only return sizes up to the maximum of a png_uint_32; do this by limiting
@@ -217,7 +217,7 @@ png_image_size(png_structrp png_ptr)
           */
          png_uint_32 w = png_ptr->width;
          unsigned int pd = png_ptr->pixel_depth;
-         png_alloc_size_t cb_base;
+         size_t cb_base;
          int pass;
 
          for (cb_base=0, pass=0; pass<=6; ++pass)
@@ -247,7 +247,7 @@ png_image_size(png_structrp png_ptr)
     * compressed.)
     */
 static void
-optimize_cmf(png_bytep data, png_alloc_size_t data_size)
+optimize_cmf(png_bytep data, size_t data_size)
 {
    /* Optimize the CMF field in the zlib stream.  The resultant zlib stream is
     * still compliant to the stream specification.
@@ -290,7 +290,7 @@ optimize_cmf(png_bytep data, png_alloc_size_t data_size)
 /* Initialize the compressor for the appropriate type of compression. */
 static int
 png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
-    png_alloc_size_t data_size)
+    size_t data_size)
 {
    if (png_ptr->zowner != 0)
    {
@@ -469,14 +469,14 @@ png_free_buffer_list(png_structrp png_ptr, png_compression_bufferp *listp)
 typedef struct
 {
    png_const_bytep      input;        /* The uncompressed input data */
-   png_alloc_size_t     input_len;    /* Its length */
+   size_t     input_len;    /* Its length */
    png_uint_32          output_len;   /* Final compressed length */
    png_byte             output[1024]; /* First block of output */
 } compression_state;
 
 static void
 png_text_compress_init(compression_state *comp, png_const_bytep input,
-    png_alloc_size_t input_len)
+    size_t input_len)
 {
    comp->input = input;
    comp->input_len = input_len;
@@ -513,7 +513,7 @@ png_text_compress(png_structrp png_ptr, png_uint_32 chunk_name,
     */
    {
       png_compression_bufferp *end = &png_ptr->zbuffer_list;
-      png_alloc_size_t input_len = comp->input_len; /* may be zero! */
+      size_t input_len = comp->input_len; /* may be zero! */
       png_uint_32 output_len;
 
       /* zlib updates these for us: */
@@ -929,7 +929,7 @@ png_write_PLTE(png_structrp png_ptr, png_const_colorp palette,
  */
 void /* PRIVATE */
 png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
-    png_alloc_size_t input_len, int flush)
+    size_t input_len, int flush)
 {
    if (png_ptr->zowner != png_IDAT)
    {
@@ -1770,7 +1770,7 @@ png_write_pCAL(png_structrp png_ptr, png_charp purpose, png_int_32 X0,
    total_len = purpose_len + units_len + 10;
 
    params_len = (png_size_tp)png_malloc(png_ptr,
-       (png_alloc_size_t)((png_alloc_size_t)nparams * (sizeof (size_t))));
+       (size_t)((size_t)nparams * (sizeof (size_t))));
 
    /* Find the length of each parameter, making sure we don't count the
     * null terminator for the last parameter.
@@ -1905,7 +1905,7 @@ png_write_start_row(png_structrp png_ptr)
    static const png_byte png_pass_yinc[7] = {8, 8, 8, 4, 4, 2, 2};
 #endif
 
-   png_alloc_size_t buf_size;
+   size_t buf_size;
    int usr_pixel_depth;
 
 #ifdef PNG_WRITE_FILTER_SUPPORTED

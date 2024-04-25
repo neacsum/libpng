@@ -437,8 +437,6 @@ typedef char* png_libpng_version_1_6_39_git;
  * (below) hides the creation and destruction of it.
  */
 typedef struct png_struct_def png_struct;
-typedef const png_struct * png_const_structp;
-typedef png_struct * png_structp;
 typedef png_struct * * png_structpp;
 
 /* png_info contains information read from or to be written to a PNG file.  One
@@ -772,17 +770,17 @@ typedef png_row_info * * png_row_infopp;
  * modify the buffer it is passed. The 'read' function, on the other hand, is
  * expected to return the read data in the buffer.
  */
-typedef PNG_CALLBACK(void, *png_error_ptr, (png_structp, png_const_charp));
-typedef PNG_CALLBACK(void, *png_rw_ptr, (png_structp, png_bytep, size_t));
-typedef PNG_CALLBACK(void, *png_flush_ptr, (png_structp));
-typedef PNG_CALLBACK(void, *png_read_status_ptr, (png_structp, png_uint_32,
+typedef PNG_CALLBACK(void, *png_error_ptr, (png_struct*, png_const_charp));
+typedef PNG_CALLBACK(void, *png_rw_ptr, (png_struct*, png_bytep, size_t));
+typedef PNG_CALLBACK(void, *png_flush_ptr, (png_struct*));
+typedef PNG_CALLBACK(void, *png_read_status_ptr, (png_struct*, png_uint_32,
     int));
-typedef PNG_CALLBACK(void, *png_write_status_ptr, (png_structp, png_uint_32,
+typedef PNG_CALLBACK(void, *png_write_status_ptr, (png_struct*, png_uint_32,
     int));
 
 #ifdef PNG_PROGRESSIVE_READ_SUPPORTED
-typedef PNG_CALLBACK(void, *png_progressive_info_ptr, (png_structp, png_infop));
-typedef PNG_CALLBACK(void, *png_progressive_end_ptr, (png_structp, png_infop));
+typedef PNG_CALLBACK(void, *png_progressive_info_ptr, (png_struct*, png_infop));
+typedef PNG_CALLBACK(void, *png_progressive_end_ptr, (png_struct*, png_infop));
 
 /* The following callback receives png_uint_32 row_number, int pass for the
  * png_bytep data of the row.  When transforming an interlaced image the
@@ -794,23 +792,23 @@ typedef PNG_CALLBACK(void, *png_progressive_end_ptr, (png_structp, png_infop));
  * find the output pixel (x,y) given an interlaced sub-image pixel
  * (row,col,pass).  (See below for these macros.)
  */
-typedef PNG_CALLBACK(void, *png_progressive_row_ptr, (png_structp, png_bytep,
+typedef PNG_CALLBACK(void, *png_progressive_row_ptr, (png_struct*, png_bytep,
     png_uint_32, int));
 #endif
 
 #if defined(PNG_READ_USER_TRANSFORM_SUPPORTED) || \
     defined(PNG_WRITE_USER_TRANSFORM_SUPPORTED)
-typedef PNG_CALLBACK(void, *png_user_transform_ptr, (png_structp, png_row_infop,
+typedef PNG_CALLBACK(void, *png_user_transform_ptr, (png_struct*, png_row_infop,
     png_bytep));
 #endif
 
 #ifdef PNG_USER_CHUNKS_SUPPORTED
-typedef PNG_CALLBACK(int, *png_user_chunk_ptr, (png_structp,
+typedef PNG_CALLBACK(int, *png_user_chunk_ptr, (png_struct*,
     png_unknown_chunkp));
 #endif
 #ifdef PNG_UNKNOWN_CHUNKS_SUPPORTED
 /* not used anywhere */
-/* typedef PNG_CALLBACK(void, *png_unknown_chunk_ptr, (png_structp)); */
+/* typedef PNG_CALLBACK(void, *png_unknown_chunk_ptr, (png_struct*)); */
 #endif
 
 #ifdef PNG_SETJMP_SUPPORTED
@@ -864,9 +862,9 @@ PNG_FUNCTION(void, (PNGCAPI *png_longjmp_ptr), PNGARG((jmp_buf, int)), typedef);
  * ignores the first argument) should be completely compatible with the
  * following.
  */
-typedef PNG_CALLBACK(png_voidp, *png_malloc_ptr, (png_structp,
-    png_alloc_size_t));
-typedef PNG_CALLBACK(void, *png_free_ptr, (png_structp, png_voidp));
+typedef PNG_CALLBACK(png_voidp, *png_malloc_ptr, (png_struct*,
+    size_t));
+typedef PNG_CALLBACK(void, *png_free_ptr, (png_struct*, png_voidp));
 
 /* Section 4: exported functions
  * Here are the function definitions most commonly used.  This is not
@@ -919,13 +917,13 @@ PNG_EXPORT(3, int, png_sig_cmp, (png_const_bytep sig, size_t start,
 #define png_check_sig(sig, n) !png_sig_cmp((sig), 0, (n))
 
 /* Allocate and initialize png_ptr struct for reading, and any other memory. */
-PNG_EXPORTA(4, png_structp, png_create_read_struct,
+PNG_EXPORTA(4, png_struct*, png_create_read_struct,
     (png_const_charp user_png_ver, png_voidp error_ptr,
     png_error_ptr error_fn, png_error_ptr warn_fn),
     PNG_ALLOCATED);
 
 /* Allocate and initialize png_ptr struct for writing, and any other memory */
-PNG_EXPORTA(5, png_structp, png_create_write_struct,
+PNG_EXPORTA(5, png_struct*, png_create_write_struct,
     (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn,
     png_error_ptr warn_fn),
     PNG_ALLOCATED);
@@ -970,12 +968,12 @@ PNG_EXPORTA(10, int, png_reset_zstream, (png_structrp png_ptr), PNG_DEPRECATED);
 
 /* New functions added in libpng-1.0.2 (not enabled by default until 1.2.0) */
 #ifdef PNG_USER_MEM_SUPPORTED
-PNG_EXPORTA(11, png_structp, png_create_read_struct_2,
+PNG_EXPORTA(11, png_struct*, png_create_read_struct_2,
     (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn,
     png_error_ptr warn_fn,
     png_voidp mem_ptr, png_malloc_ptr malloc_fn, png_free_ptr free_fn),
     PNG_ALLOCATED);
-PNG_EXPORTA(12, png_structp, png_create_write_struct_2,
+PNG_EXPORTA(12, png_struct*, png_create_write_struct_2,
     (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn,
     png_error_ptr warn_fn,
     png_voidp mem_ptr, png_malloc_ptr malloc_fn, png_free_ptr free_fn),
@@ -1714,14 +1712,14 @@ PNG_EXPORT(93, void, png_progressive_combine_row, (png_const_structrp png_ptr,
 #endif /* PROGRESSIVE_READ */
 
 PNG_EXPORTA(94, png_voidp, png_malloc, (png_const_structrp png_ptr,
-    png_alloc_size_t size), PNG_ALLOCATED);
+    size_t size), PNG_ALLOCATED);
 /* Added at libpng version 1.4.0 */
 PNG_EXPORTA(95, png_voidp, png_calloc, (png_const_structrp png_ptr,
-    png_alloc_size_t size), PNG_ALLOCATED);
+    size_t size), PNG_ALLOCATED);
 
 /* Added at libpng version 1.2.4 */
 PNG_EXPORTA(96, png_voidp, png_malloc_warn, (png_const_structrp png_ptr,
-    png_alloc_size_t size), PNG_ALLOCATED);
+    size_t size), PNG_ALLOCATED);
 
 /* Frees a pointer allocated by png_malloc() */
 PNG_EXPORT(97, void, png_free, (png_const_structrp png_ptr, png_voidp ptr));
@@ -1764,7 +1762,7 @@ PNG_EXPORT(99, void, png_data_freer, (png_const_structrp png_ptr,
 
 #ifdef PNG_USER_MEM_SUPPORTED
 PNG_EXPORTA(100, png_voidp, png_malloc_default, (png_const_structrp png_ptr,
-    png_alloc_size_t size), PNG_ALLOCATED PNG_DEPRECATED);
+    size_t size), PNG_ALLOCATED PNG_DEPRECATED);
 PNG_EXPORTA(101, void, png_free_default, (png_const_structrp png_ptr,
     png_voidp ptr), PNG_DEPRECATED);
 #endif
@@ -2371,8 +2369,8 @@ PNG_EXPORT(190, png_uint_32, png_get_chunk_cache_max,
     (png_const_structrp png_ptr));
 /* Added in libpng-1.4.1 */
 PNG_EXPORT(191, void, png_set_chunk_malloc_max, (png_structrp png_ptr,
-    png_alloc_size_t user_chunk_cache_max));
-PNG_EXPORT(192, png_alloc_size_t, png_get_chunk_malloc_max,
+    size_t user_chunk_cache_max));
+PNG_EXPORT(192, size_t, png_get_chunk_malloc_max,
     (png_const_structrp png_ptr));
 #endif
 
@@ -2612,7 +2610,7 @@ PNG_EXPORT(207, void, png_save_uint_16, (png_bytep buf, unsigned int i));
 PNG_EXPORT(242, void, png_set_check_for_invalid_index,
     (png_structrp png_ptr, int allowed));
 #  ifdef PNG_GET_PALETTE_MAX_SUPPORTED
-PNG_EXPORT(243, int, png_get_palette_max, (png_const_structp png_ptr,
+PNG_EXPORT(243, int, png_get_palette_max, (const png_struct* png_ptr,
     png_const_infop info_ptr));
 #  endif
 #endif /* CHECK_FOR_INVALID_INDEX */
@@ -3084,7 +3082,7 @@ PNG_EXPORT(240, int, png_image_write_to_stdio, (png_imagep image, FILE *file,
  */
 
 PNG_EXPORT(245, int, png_image_write_to_memory, (png_imagep image, void *memory,
-   png_alloc_size_t * PNG_RESTRICT memory_bytes, int convert_to_8_bit,
+   size_t * PNG_RESTRICT memory_bytes, int convert_to_8_bit,
    const void *buffer, png_int_32 row_stride, const void *colormap));
    /* Write the image to the given memory buffer.  The function both writes the
     * whole PNG data stream to *memory and updates *memory_bytes with the count
@@ -3148,7 +3146,7 @@ PNG_EXPORT(245, int, png_image_write_to_memory, (png_imagep image, void *memory,
 #endif
 
 #define PNG_IMAGE_COMPRESSED_SIZE_MAX(image)\
-   PNG_ZLIB_MAX_SIZE((png_alloc_size_t)PNG_IMAGE_DATA_SIZE(image))
+   PNG_ZLIB_MAX_SIZE((size_t)PNG_IMAGE_DATA_SIZE(image))
    /* An upper bound on the size of the data in the PNG IDAT chunks. */
 
 #define PNG_IMAGE_PNG_SIZE_MAX_(image, image_size)\
@@ -3167,7 +3165,7 @@ PNG_EXPORT(245, int, png_image_write_to_memory, (png_imagep image, void *memory,
 #define PNG_IMAGE_PNG_SIZE_MAX(image)\
    PNG_IMAGE_PNG_SIZE_MAX_(image, PNG_IMAGE_COMPRESSED_SIZE_MAX(image))
    /* An upper bound on the total length of the PNG data stream for 'image'.
-    * The result is of type png_alloc_size_t, on 32-bit systems this may
+    * The result is of type size_t, on 32-bit systems this may
     * overflow even though PNG_IMAGE_DATA_SIZE does not overflow; the write will
     * run out of buffer space but return a corrected size which should work.
     */

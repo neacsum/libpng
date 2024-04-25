@@ -97,12 +97,12 @@ png_sig_cmp(png_const_bytep sig, size_t start, size_t num_to_check)
 PNG_FUNCTION(voidpf /* PRIVATE */,
 png_zalloc,(voidpf png_ptr, uInt items, uInt size),PNG_ALLOCATED)
 {
-   png_alloc_size_t num_bytes = size;
+   size_t num_bytes = size;
 
    if (png_ptr == NULL)
       return NULL;
 
-   if (items >= (~(png_alloc_size_t)0)/size)
+   if (items >= (~(size_t)0)/size)
    {
       png_warning (png_voidcast(png_structrp, png_ptr),
           "Potential overflow in png_zalloc()");
@@ -246,7 +246,7 @@ png_user_version_check(png_structrp png_ptr, png_const_charp user_png_ver)
 /* Generic function to create a png_struct for either read or write - this
  * contains the common initialization.
  */
-PNG_FUNCTION(png_structp /* PRIVATE */,
+PNG_FUNCTION(png_struct* /* PRIVATE */,
 png_create_png_struct,(png_const_charp user_png_ver, png_voidp error_ptr,
     png_error_ptr error_fn, png_error_ptr warn_fn, png_voidp mem_ptr,
     png_malloc_ptr malloc_fn, png_free_ptr free_fn),PNG_ALLOCATED)
@@ -1804,14 +1804,14 @@ png_icc_tag_name(char *name, png_uint_32 tag)
 }
 
 static int
-is_ICC_signature_char(png_alloc_size_t it)
+is_ICC_signature_char(size_t it)
 {
    return it == 32 || (it >= 48 && it <= 57) || (it >= 65 && it <= 90) ||
       (it >= 97 && it <= 122);
 }
 
 static int
-is_ICC_signature(png_alloc_size_t it)
+is_ICC_signature(size_t it)
 {
    return is_ICC_signature_char(it >> 24) /* checks all the top bits */ &&
       is_ICC_signature_char((it >> 16) & 0xff) &&
@@ -1821,7 +1821,7 @@ is_ICC_signature(png_alloc_size_t it)
 
 static int
 png_icc_profile_error(png_const_structrp png_ptr, png_colorspacerp colorspace,
-    png_const_charp name, png_alloc_size_t value, png_const_charp reason)
+    png_const_charp name, size_t value, png_const_charp reason)
 {
    size_t pos;
    char message[196]; /* see below for calculation */
@@ -1907,12 +1907,12 @@ png_colorspace_set_sRGB(png_const_structrp png_ptr, png_colorspacerp colorspace,
     */
    if (intent < 0 || intent >= PNG_sRGB_INTENT_LAST)
       return png_icc_profile_error(png_ptr, colorspace, "sRGB",
-          (png_alloc_size_t)intent, "invalid sRGB rendering intent");
+          (size_t)intent, "invalid sRGB rendering intent");
 
    if ((colorspace->flags & PNG_COLORSPACE_HAVE_INTENT) != 0 &&
        colorspace->rendering_intent != intent)
       return png_icc_profile_error(png_ptr, colorspace, "sRGB",
-         (png_alloc_size_t)intent, "inconsistent rendering intents");
+         (size_t)intent, "inconsistent rendering intents");
 
    if ((colorspace->flags & PNG_COLORSPACE_FROM_sRGB) != 0)
    {

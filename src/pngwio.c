@@ -48,7 +48,7 @@ png_write_data(png_structrp png_ptr, png_const_bytep data, size_t length)
  * than changing the library.
  */
 void PNGCBAPI
-png_default_write_data(png_structp png_ptr, png_bytep data, size_t length)
+png_default_write_data(png_struct* png_ptr, png_bytep data, size_t length)
 {
    size_t check;
 
@@ -76,7 +76,7 @@ png_flush(png_structrp png_ptr)
 
 #  ifdef PNG_STDIO_SUPPORTED
 void PNGCBAPI
-png_default_flush(png_structp png_ptr)
+png_default_flush(png_struct* png_ptr)
 {
    png_FILE_p io_ptr;
 

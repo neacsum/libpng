@@ -1661,7 +1661,7 @@ png_set_chunk_cache_max(png_structrp png_ptr, png_uint_32 user_chunk_cache_max)
 /* This function was added to libpng 1.4.1 */
 void PNGAPI
 png_set_chunk_malloc_max(png_structrp png_ptr,
-    png_alloc_size_t user_chunk_malloc_max)
+    size_t user_chunk_malloc_max)
 {
    if (png_ptr != NULL)
       png_ptr->user_chunk_malloc_max = user_chunk_malloc_max;

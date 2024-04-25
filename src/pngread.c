@@ -22,12 +22,12 @@
 #ifdef PNG_READ_SUPPORTED
 
 /* Create a PNG structure for reading, and allocate any memory needed. */
-PNG_FUNCTION(png_structp,PNGAPI
+PNG_FUNCTION(png_struct*,PNGAPI
 png_create_read_struct,(png_const_charp user_png_ver, png_voidp error_ptr,
     png_error_ptr error_fn, png_error_ptr warn_fn),PNG_ALLOCATED)
 {
 #ifndef PNG_USER_MEM_SUPPORTED
-   png_structp png_ptr = png_create_png_struct(user_png_ver, error_ptr,
+   png_struct* png_ptr = png_create_png_struct(user_png_ver, error_ptr,
         error_fn, warn_fn, NULL, NULL, NULL);
 #else
    return png_create_read_struct_2(user_png_ver, error_ptr, error_fn,
@@ -37,12 +37,12 @@ png_create_read_struct,(png_const_charp user_png_ver, png_voidp error_ptr,
 /* Alternate create PNG structure for reading, and allocate any memory
  * needed.
  */
-PNG_FUNCTION(png_structp,PNGAPI
+PNG_FUNCTION(png_struct*,PNGAPI
 png_create_read_struct_2,(png_const_charp user_png_ver, png_voidp error_ptr,
     png_error_ptr error_fn, png_error_ptr warn_fn, png_voidp mem_ptr,
     png_malloc_ptr malloc_fn, png_free_ptr free_fn),PNG_ALLOCATED)
 {
-   png_structp png_ptr = png_create_png_struct(user_png_ver, error_ptr,
+   png_struct* png_ptr = png_create_png_struct(user_png_ver, error_ptr,
        error_fn, warn_fn, mem_ptr, malloc_fn, free_fn);
 #endif /* USER_MEM */
 
@@ -1307,7 +1307,7 @@ png_image_read_init(png_imagep image)
 {
    if (image->opaque == NULL)
    {
-      png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, image,
+      png_struct* png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, image,
           png_safe_error, png_safe_warning);
 
       /* And set the rest of the structure to NULL to ensure that the various
@@ -1538,7 +1538,7 @@ png_image_begin_read_from_file(png_imagep image, const char *file_name)
 #endif /* STDIO */
 
 static void PNGCBAPI
-png_image_memory_read(png_structp png_ptr, png_bytep out, size_t need)
+png_image_memory_read(png_struct* png_ptr, png_bytep out, size_t need)
 {
    if (png_ptr != NULL)
    {
@@ -3242,7 +3242,7 @@ png_image_read_colormapped(png_voidp argument)
 
    else
    {
-      png_alloc_size_t row_bytes = (png_alloc_size_t)display->row_bytes;
+      size_t row_bytes = (size_t)display->row_bytes;
 
       while (--passes >= 0)
       {
@@ -4083,7 +4083,7 @@ png_image_read_direct(png_voidp argument)
 
    else
    {
-      png_alloc_size_t row_bytes = (png_alloc_size_t)display->row_bytes;
+      size_t row_bytes = (size_t)display->row_bytes;
 
       while (--passes >= 0)
       {
@@ -4152,7 +4152,7 @@ png_image_finish_read(png_imagep image, png_const_colorp background,
              * does actually fit into a 32-bit number.
              *
              * NOTE: this will be changed in 1.7 because PNG_IMAGE_BUFFER_SIZE
-             * will be changed to use png_alloc_size_t; bigger images can be
+             * will be changed to use size_t; bigger images can be
              * accommodated on 64-bit systems.
              */
             if (image->height <=

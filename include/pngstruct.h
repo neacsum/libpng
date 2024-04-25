@@ -435,7 +435,7 @@ struct png_struct_def
    /* Total memory that a zTXt, sPLT, iTXt, iCCP, or unknown chunk
     * can occupy when decompressed.  0 means unlimited.
     */
-   png_alloc_size_t user_chunk_malloc_max;
+   size_t user_chunk_malloc_max;
 #endif
 
 /* New member added in libpng-1.0.25 and 1.2.17 */
@@ -452,7 +452,7 @@ struct png_struct_def
 #ifdef PNG_READ_SUPPORTED
 /* New member added in libpng-1.2.30 */
   png_bytep        read_buffer;      /* buffer for reading chunk data */
-  png_alloc_size_t read_buffer_size; /* current size of the buffer */
+  size_t read_buffer_size; /* current size of the buffer */
 #endif
 #ifdef PNG_SEQUENTIAL_READ_SUPPORTED
   uInt             IDAT_read_size;   /* limit on read buffer size for IDAT */

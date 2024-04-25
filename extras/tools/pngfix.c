@@ -181,7 +181,7 @@ typedef png_const_uint_16p uarbc;
     */
 
 static int
-uarb_set(uarb result, png_alloc_size_t val)
+uarb_set(uarb result, size_t val)
    /* Set (initialize) 'result' to 'val'.  The size required for 'result' must
     * be determined by the caller from a knowledge of the maximum for 'val'.
     */
@@ -3167,13 +3167,13 @@ read_chunk(struct file *file)
 static struct file *get_control(png_const_structrp png_ptr);
 
 static void PNGCBAPI
-error_handler(png_structp png_ptr, png_const_charp message)
+error_handler(png_struct* png_ptr, png_const_charp message)
 {
    stop(get_control(png_ptr),  LIBPNG_ERROR_CODE, message);
 }
 
 static void PNGCBAPI
-warning_handler(png_structp png_ptr, png_const_charp message)
+warning_handler(png_struct* png_ptr, png_const_charp message)
 {
    struct file *file = get_control(png_ptr);
 
@@ -3185,7 +3185,7 @@ warning_handler(png_structp png_ptr, png_const_charp message)
  * passing it to libpng
  */
 static void PNGCBAPI
-read_callback(png_structp png_ptr, png_bytep buffer, size_t count)
+read_callback(png_struct* png_ptr, png_bytep buffer, size_t count)
    /* Return 'count' bytes to libpng in 'buffer' */
 {
    struct file *file = get_control(png_ptr);
@@ -3580,7 +3580,7 @@ read_png(struct control *control)
     * defined for file::status_code as above.
     */
 {
-   png_structp png_ptr;
+   png_struct* png_ptr;
    png_infop info_ptr = NULL;
    volatile int rc;
 

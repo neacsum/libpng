@@ -436,7 +436,7 @@ buffer_start_read(struct buffer *buffer)
 #  define MEMORY ERANGE /* required by ANSI-C */
 #endif
 static struct buffer *
-get_buffer(png_structp pp)
+get_buffer(png_struct* pp)
    /* Used from libpng callbacks to get the current buffer */
 {
    return (struct buffer*)png_get_io_ptr(pp);
@@ -555,7 +555,7 @@ struct display
    png_uint_32    results;           /* A mask of errors seen */
 
 
-   png_structp    original_pp;       /* used on the original read */
+   png_struct*    original_pp;       /* used on the original read */
    png_infop      original_ip;       /* set by the original read */
 
    size_t         original_rowbytes; /* of the original rows: */
@@ -580,12 +580,12 @@ struct display
    /* Used on a read, both the original read and when validating a written
     * image.
     */
-   png_structp    read_pp;
+   png_struct*    read_pp;
    png_infop      read_ip;
 
 #  ifdef PNG_WRITE_PNG_SUPPORTED
       /* Used to write a new image (the original info_ptr is used) */
-      png_structp   write_pp;
+      png_struct*   write_pp;
       struct buffer written_file;   /* where the file gets written */
 #  endif
 
@@ -661,7 +661,7 @@ display_destroy(struct display *dp)
 }
 
 static struct display *
-get_dp(png_structp pp)
+get_dp(png_struct* pp)
    /* The display pointer is always stored in the png_struct error pointer */
 {
    struct display *dp = (struct display*)png_get_error_ptr(pp);
@@ -772,13 +772,13 @@ display_log(struct display *dp, error_level level, const char *fmt, ...)
 
 /* error handler callbacks for libpng */
 static void PNGCBAPI
-display_warning(png_structp pp, png_const_charp warning)
+display_warning(png_struct* pp, png_const_charp warning)
 {
    display_log(get_dp(pp), LIBPNG_WARNING, "%s", warning);
 }
 
 static void PNGCBAPI
-display_error(png_structp pp, png_const_charp error)
+display_error(png_struct* pp, png_const_charp error)
 {
    struct display *dp = get_dp(pp);
 
@@ -862,7 +862,7 @@ buffer_read(struct display *dp, struct buffer *bp, png_bytep data,
 }
 
 static void PNGCBAPI
-read_function(png_structp pp, png_bytep data, size_t size)
+read_function(png_struct* pp, png_bytep data, size_t size)
 {
    buffer_read(get_dp(pp), get_buffer(pp), data, size);
 }
@@ -871,7 +871,7 @@ static void
 read_png(struct display *dp, struct buffer *bp, const char *operation,
    int transforms)
 {
-   png_structp pp;
+   png_struct* pp;
    png_infop   ip;
 
    /* This cleans out any previous read and sets operation and transforms to
@@ -931,7 +931,7 @@ update_display(struct display *dp)
     * original_ip must have been filled in.
     */
 {
-   png_structp pp;
+   png_struct* pp;
    png_infop   ip;
 
    /* Now perform the initial read with a 0 transform. */
@@ -1324,7 +1324,7 @@ buffer_write(struct display *dp, struct buffer *buffer, png_bytep data,
 }
 
 static void PNGCBAPI
-write_function(png_structp pp, png_bytep data, size_t size)
+write_function(png_struct* pp, png_bytep data, size_t size)
 {
    buffer_write(get_dp(pp), get_buffer(pp), data, size);
 }

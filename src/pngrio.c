@@ -47,7 +47,7 @@ png_read_data(png_structrp png_ptr, png_bytep data, size_t length)
  * than changing the library.
  */
 void PNGCBAPI
-png_default_read_data(png_structp png_ptr, png_bytep data, size_t length)
+png_default_read_data(png_struct* png_ptr, png_bytep data, size_t length)
 {
    size_t check;
 

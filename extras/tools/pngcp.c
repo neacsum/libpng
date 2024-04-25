@@ -440,8 +440,8 @@ struct display
    /* Used on a read, both the original read and when validating a written
     * image.
     */
-   png_alloc_size_t read_size;
-   png_structp      read_pp;
+   size_t read_size;
+   png_struct*      read_pp;
    png_infop        ip;
 #  if PNG_LIBPNG_VER < 10700 && defined PNG_TEXT_SUPPORTED
       png_textp     text_ptr; /* stash of text chunks */
@@ -457,13 +457,13 @@ struct display
 #  endif /* PNGCP_TIMING */
 
    /* Used to write a new image (the original info_ptr is used) */
-#  define MAX_SIZE ((png_alloc_size_t)(-1))
-   png_alloc_size_t write_size;
-   png_alloc_size_t best_size;
-   png_structp      write_pp;
+#  define MAX_SIZE ((size_t)(-1))
+   size_t write_size;
+   size_t best_size;
+   png_struct*      write_pp;
 
    /* Base file information */
-   png_alloc_size_t size;
+   size_t size;
    png_uint_32      w;
    png_uint_32      h;
    int              bpp;
@@ -499,9 +499,9 @@ struct display
                                         */
    struct stack
    {
-      png_alloc_size_t best_size;      /* Best so far for this option */
-      png_alloc_size_t lo_size;
-      png_alloc_size_t hi_size;
+      size_t best_size;      /* Best so far for this option */
+      size_t lo_size;
+      size_t hi_size;
       int              lo, hi;         /* For binary chop of a range */
       int              best_val;       /* Best value found so far */
       int              opt_string_end; /* End of the option string in 'curr' */
@@ -599,7 +599,7 @@ display_destroy(struct display *dp)
 }
 
 static struct display *
-get_dp(png_structp pp)
+get_dp(png_struct* pp)
    /* The display pointer is always stored in the png_struct error pointer */
 {
    struct display *dp = (struct display*)png_get_error_ptr(pp);
@@ -976,7 +976,7 @@ next_opt(struct display *dp, unsigned int sp)
       else
       {
          /* This is the best size found for this option value: */
-         png_alloc_size_t best_size = dp->stack[sp].best_size;
+         size_t best_size = dp->stack[sp].best_size;
          int lo = dp->stack[sp].lo;
          int hi = dp->stack[sp].hi;
          int val = dp->value[opt];
@@ -1009,8 +1009,8 @@ next_opt(struct display *dp, unsigned int sp)
 
          else
          {
-            png_alloc_size_t lo_size = dp->stack[sp].lo_size;
-            png_alloc_size_t hi_size = dp->stack[sp].hi_size;
+            size_t lo_size = dp->stack[sp].lo_size;
+            size_t hi_size = dp->stack[sp].hi_size;
 
             /* lo and hi should have been tested. */
             assert(lo_size < MAX_SIZE && hi_size < MAX_SIZE);
@@ -1720,7 +1720,7 @@ makename(struct display *dp, const char *dir, const char *infile)
 
 /* error handler callbacks for libpng */
 static void PNGCBAPI
-display_warning(png_structp pp, png_const_charp warning)
+display_warning(png_struct* pp, png_const_charp warning)
 {
    struct display *dp = get_dp(pp);
 
@@ -1730,7 +1730,7 @@ display_warning(png_structp pp, png_const_charp warning)
 }
 
 static void PNGCBAPI
-display_error(png_structp pp, png_const_charp error)
+display_error(png_struct* pp, png_const_charp error)
 {
    struct display *dp = get_dp(pp);
 
@@ -1762,7 +1762,7 @@ display_start_read(struct display *dp, const char *filename)
 }
 
 static void PNGCBAPI
-read_function(png_structp pp, png_bytep data, size_t size)
+read_function(png_struct* pp, png_bytep data, size_t size)
 {
    struct display *dp = get_dp(pp);
 
@@ -1840,7 +1840,7 @@ read_png(struct display *dp, const char *filename)
        * first call to png_set_IHDR, which should have happened by now, but just
        * in case:
        */
-      png_alloc_size_t rb = png_get_rowbytes(dp->read_pp, dp->ip);
+      size_t rb = png_get_rowbytes(dp->read_pp, dp->ip);
 
       if (rb == 0)
          png_error(dp->read_pp, "invalid row byte count from libpng");
@@ -1918,7 +1918,7 @@ display_start_write(struct display *dp, const char *filename)
 }
 
 static void PNGCBAPI
-write_function(png_structp pp, png_bytep data, size_t size)
+write_function(png_struct* pp, png_bytep data, size_t size)
 {
    struct display *dp = get_dp(pp);
 

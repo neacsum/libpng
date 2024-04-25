@@ -131,7 +131,7 @@ png_safecat(png_charp buffer, size_t bufsize, size_t pos,
  */
 png_charp
 png_format_number(png_const_charp start, png_charp end, int format,
-    png_alloc_size_t number)
+    size_t number)
 {
    int count = 0;    /* number of digits output */
    int mincount = 1; /* minimum number required */
@@ -253,7 +253,7 @@ png_warning_parameter(png_warning_parameters p, int number,
 
 void
 png_warning_parameter_unsigned(png_warning_parameters p, int number, int format,
-    png_alloc_size_t value)
+    size_t value)
 {
    char buffer[PNG_NUMBER_BUFFER_SIZE];
    png_warning_parameter(p, number, PNG_FORMAT_NUMBER(buffer, format, value));
@@ -263,12 +263,12 @@ void
 png_warning_parameter_signed(png_warning_parameters p, int number, int format,
     png_int_32 value)
 {
-   png_alloc_size_t u;
+   size_t u;
    png_charp str;
    char buffer[PNG_NUMBER_BUFFER_SIZE];
 
-   /* Avoid overflow by doing the negate in a png_alloc_size_t: */
-   u = (png_alloc_size_t)value;
+   /* Avoid overflow by doing the negate in a size_t: */
+   u = (size_t)value;
    if (value < 0)
       u = ~u + 1;
 
@@ -882,7 +882,7 @@ png_set_strip_error_numbers(png_structrp png_ptr, png_uint_32 strip_mode)
     * way to handle the error return here:
     */
 PNG_FUNCTION(void /* PRIVATE */, (PNGCBAPI
-png_safe_error),(png_structp png_nonconst_ptr, png_const_charp error_message),
+png_safe_error),(png_struct* png_nonconst_ptr, png_const_charp error_message),
     PNG_NORETURN)
 {
    png_const_structrp png_ptr = png_nonconst_ptr;
@@ -918,7 +918,7 @@ png_safe_error),(png_structp png_nonconst_ptr, png_const_charp error_message),
 
 #ifdef PNG_WARNINGS_SUPPORTED
 void /* PRIVATE */ PNGCBAPI
-png_safe_warning(png_structp png_nonconst_ptr, png_const_charp warning_message)
+png_safe_warning(png_struct* png_nonconst_ptr, png_const_charp warning_message)
 {
    png_const_structrp png_ptr = png_nonconst_ptr;
    png_imagep image = png_voidcast(png_imagep, png_ptr->error_ptr);

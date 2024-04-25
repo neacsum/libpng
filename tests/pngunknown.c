@@ -98,7 +98,7 @@ typedef png_byte *png_const_bytep;
    /* 1.6.0 constifies many APIs. The following exists to allow pngvalid to be
     * compiled against earlier versions.
     */
-#  define png_const_structp png_structp
+#  define const png_struct* png_struct*
 #endif
 
 #if PNG_LIBPNG_VER < 10700
@@ -399,7 +399,7 @@ ancillaryb(const png_byte *name)
 typedef struct
 {
    jmp_buf     error_return;
-   png_structp png_ptr;
+   png_struct* png_ptr;
    png_infop   info_ptr, end_ptr;
    png_uint_32 before_IDAT;
    png_uint_32 after_IDAT;
@@ -463,7 +463,7 @@ display_rc(const display *d, int strict)
 }
 
 /* libpng error and warning callbacks */
-PNG_FUNCTION(void, (PNGCBAPI error), (png_structp png_ptr, const char *message),
+PNG_FUNCTION(void, (PNGCBAPI error), (png_struct* png_ptr, const char *message),
    static PNG_NORETURN)
 {
    display *d = (display*)png_get_error_ptr(png_ptr);
@@ -473,7 +473,7 @@ PNG_FUNCTION(void, (PNGCBAPI error), (png_structp png_ptr, const char *message),
 }
 
 static void PNGCBAPI
-warning(png_structp png_ptr, const char *message)
+warning(png_struct* png_ptr, const char *message)
 {
    display *d = (display*)png_get_error_ptr(png_ptr);
 
@@ -515,7 +515,7 @@ get_valid(display *d, png_infop info_ptr)
 
 #ifdef PNG_READ_USER_CHUNKS_SUPPORTED
 static int PNGCBAPI
-read_callback(png_structp pp, png_unknown_chunkp pc)
+read_callback(png_struct* pp, png_unknown_chunkp pc)
 {
    /* This function mimics the behavior of png_set_keep_unknown_chunks by
     * returning '0' to keep the chunk and '1' to discard it.

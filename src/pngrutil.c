@@ -295,7 +295,7 @@ png_crc_error(png_structrp png_ptr)
  * 'silent').
  */
 static png_bytep
-png_read_buffer(png_structrp png_ptr, png_alloc_size_t new_size, int warn)
+png_read_buffer(png_structrp png_ptr, size_t new_size, int warn)
 {
    png_bytep buffer = png_ptr->read_buffer;
 
@@ -483,12 +483,12 @@ png_zlib_inflate(png_structrp png_ptr, int flush)
 static int
 png_inflate(png_structrp png_ptr, png_uint_32 owner, int finish,
     /* INPUT: */ png_const_bytep input, png_uint_32p input_size_ptr,
-    /* OUTPUT: */ png_bytep output, png_alloc_size_t *output_size_ptr)
+    /* OUTPUT: */ png_bytep output, size_t *output_size_ptr)
 {
    if (png_ptr->zowner == owner) /* Else not claimed */
    {
       int ret;
-      png_alloc_size_t avail_out = *output_size_ptr;
+      size_t avail_out = *output_size_ptr;
       png_uint_32 avail_in = *input_size_ptr;
 
       /* zlib can't necessarily handle more than 65535 bytes at once (i.e. it
@@ -608,7 +608,7 @@ png_inflate(png_structrp png_ptr, png_uint_32 owner, int finish,
 static int
 png_decompress_chunk(png_structrp png_ptr,
     png_uint_32 chunklength, png_uint_32 prefix_size,
-    png_alloc_size_t *newlength /* must be initialized to the maximum! */,
+    size_t *newlength /* must be initialized to the maximum! */,
     int terminate /*add a '\0' to the end of the uncompressed data*/)
 {
    /* TODO: implement different limits for different types of chunk.
@@ -618,7 +618,7 @@ png_decompress_chunk(png_structrp png_ptr,
     * maybe a '\0' terminator too.  We have to assume that 'prefix_size' is
     * limited only by the maximum chunk size.
     */
-   png_alloc_size_t limit = PNG_SIZE_MAX;
+   size_t limit = PNG_SIZE_MAX;
 
 # ifdef PNG_SET_USER_LIMITS_SUPPORTED
    if (png_ptr->user_chunk_malloc_max > 0 &&
@@ -662,11 +662,11 @@ png_decompress_chunk(png_structrp png_ptr,
             {
                /* Because of the limit checks above we know that the new,
                 * expanded, size will fit in a size_t (let alone an
-                * png_alloc_size_t).  Use png_malloc_base here to avoid an
+                * size_t).  Use png_malloc_base here to avoid an
                 * extra OOM message.
                 */
-               png_alloc_size_t new_size = *newlength;
-               png_alloc_size_t buffer_size = prefix_size + new_size +
+               size_t new_size = *newlength;
+               size_t buffer_size = prefix_size + new_size +
                    (terminate != 0);
                png_bytep text = png_voidcast(png_bytep, png_malloc_base(png_ptr,
                    buffer_size));
@@ -771,7 +771,7 @@ png_decompress_chunk(png_structrp png_ptr,
  */
 static int
 png_inflate_read(png_structrp png_ptr, png_bytep read_buffer, uInt read_size,
-    png_uint_32p chunk_bytes, png_bytep next_out, png_alloc_size_t *out_size,
+    png_uint_32p chunk_bytes, png_bytep next_out, size_t *out_size,
     int finish)
 {
    if (png_ptr->zowner == png_ptr->chunk_name)
@@ -1448,7 +1448,7 @@ png_handle_iCCP(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
             {
                Byte profile_header[132]={0};
                Byte local_buffer[PNG_INFLATE_BUF_SIZE];
-               png_alloc_size_t size = (sizeof profile_header);
+               size_t size = (sizeof profile_header);
 
                png_ptr->zstream.next_in = (Bytef*)keyword + (keyword_length+2);
                png_ptr->zstream.avail_in = read_length;
@@ -1745,7 +1745,7 @@ png_handle_sPLT(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
    new_palette.nentries = (png_int_32)(data_length / (unsigned int)entry_size);
 
    new_palette.entries = (png_sPLT_entryp)png_malloc_warn(png_ptr,
-       (png_alloc_size_t) new_palette.nentries * (sizeof (png_sPLT_entry)));
+       (size_t) new_palette.nentries * (sizeof (png_sPLT_entry)));
 
    if (new_palette.entries == NULL)
    {
@@ -2664,7 +2664,7 @@ png_handle_zTXt(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
 
    else
    {
-      png_alloc_size_t uncompressed_length = PNG_SIZE_MAX;
+      size_t uncompressed_length = PNG_SIZE_MAX;
 
       /* TODO: at present png_decompress_chunk imposes a single application
        * level memory limit, this should be split to different values for iCCP
@@ -2780,7 +2780,7 @@ png_handle_iTXt(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
    {
       int compressed = buffer[prefix_length+1] != 0;
       png_uint_32 language_offset, translated_keyword_offset;
-      png_alloc_size_t uncompressed_length = 0;
+      size_t uncompressed_length = 0;
 
       /* Now the language tag */
       prefix_length += 3;
@@ -2863,7 +2863,7 @@ png_handle_iTXt(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
 static int
 png_cache_unknown_chunk(png_structrp png_ptr, png_uint_32 length)
 {
-   png_alloc_size_t limit = PNG_SIZE_MAX;
+   size_t limit = PNG_SIZE_MAX;
 
    if (png_ptr->unknown_chunk.data != NULL)
    {
@@ -3153,7 +3153,7 @@ png_check_chunk_name(png_const_structrp png_ptr, png_uint_32 chunk_name)
 void /* PRIVATE */
 png_check_chunk_length(png_const_structrp png_ptr, png_uint_32 length)
 {
-   png_alloc_size_t limit = PNG_UINT_31_MAX;
+   size_t limit = PNG_UINT_31_MAX;
 
 # ifdef PNG_SET_USER_LIMITS_SUPPORTED
    if (png_ptr->user_chunk_malloc_max > 0 &&
@@ -3165,7 +3165,7 @@ png_check_chunk_length(png_const_structrp png_ptr, png_uint_32 length)
 # endif
    if (png_ptr->chunk_name == png_IDAT)
    {
-      png_alloc_size_t idat_limit = PNG_UINT_31_MAX;
+      size_t idat_limit = PNG_UINT_31_MAX;
       size_t row_factor =
          (size_t)png_ptr->width
          * (size_t)png_ptr->channels
@@ -3202,7 +3202,7 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
 {
    unsigned int pixel_depth = png_ptr->transformed_pixel_depth;
    png_const_bytep sp = png_ptr->row_buf + 1;
-   png_alloc_size_t row_width = png_ptr->width;
+   size_t row_width = png_ptr->width;
    unsigned int pass = png_ptr->pass;
    png_bytep end_ptr = 0;
    png_byte end_byte = 0;
@@ -4148,7 +4148,7 @@ png_read_filter_row(png_structrp pp, png_row_infop row_info, png_bytep row,
 #ifdef PNG_SEQUENTIAL_READ_SUPPORTED
 void /* PRIVATE */
 png_read_IDAT_data(png_structrp png_ptr, png_bytep output,
-    png_alloc_size_t avail_out)
+    size_t avail_out)
 {
    /* Loop reading IDATs and decompressing the result into output[avail_out] */
    png_ptr->zstream.next_out = output;

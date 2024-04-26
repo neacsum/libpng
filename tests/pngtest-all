@@ -1,16 +1,17 @@
 #!/bin/sh
+# Arguments:
+#  $1 - path to pngtest binary
 
 # normal execution
-
-./pngtest --strict ${srcdir}/pngtest.png
+$1/pngtest --strict data/pngtest.png
 
 # various crashers
 # using --relaxed because some come from fuzzers that don't maintain CRC's
+DATADIR=tests/crashers
 
-./pngtest --relaxed ${srcdir}/contrib/testpngs/crashers/badcrc.png
-./pngtest --relaxed ${srcdir}/contrib/testpngs/crashers/badadler.png
-./pngtest --xfail ${srcdir}/contrib/testpngs/crashers/bad_iCCP.png
-./pngtest --xfail ${srcdir}/contrib/testpngs/crashers/empty_ancillary_chunks.png
-./pngtest --xfail ${srcdir}/contrib/testpngs/crashers/huge_*_chunk.png \
-    ${srcdir}/contrib/testpngs/crashers/huge_*safe_to_copy.png
-./pngtest --xfail ${srcdir}/contrib/testpngs/crashers/huge_IDAT.png
+$1/pngtest --relaxed ${DATADIR}/badcrc.png
+$1/pngtest --relaxed ${DATADIR}/badadler.png
+$1/pngtest --xfail ${DATADIR}/bad_iCCP.png
+$1/pngtest --xfail ${DATADIR}/empty_ancillary_chunks.png
+$1/pngtest --xfail ${DATADIR}/huge_*_chunk.png
+$1/pngtest --xfail ${DATADIR}/huge_IDAT.png

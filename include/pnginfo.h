@@ -76,10 +76,8 @@ struct png_info_def
    png_byte pixel_depth;    /* number of bits per pixel */
    png_byte spare_byte;     /* to align the data, and for future use */
 
-#ifdef PNG_READ_SUPPORTED
    /* This is never set during write */
    png_byte signature[8];   /* magic bytes read by libpng from start of file */
-#endif
 
    /* The rest of the data is optional.  If you are reading, check the
     * valid field to see if the information in these are valid.  If you
@@ -87,7 +85,6 @@ struct png_info_def
     * and initialize the appropriate fields below.
     */
 
-#if defined(PNG_COLORSPACE_SUPPORTED) || defined(PNG_GAMMA_SUPPORTED)
    /* png_colorspace only contains 'flags' if neither GAMMA or COLORSPACE are
     * defined.  When COLORSPACE is switched on all the colorspace-defining
     * chunks should be enabled, when GAMMA is switched on all the gamma-defining
@@ -99,16 +96,12 @@ struct png_info_def
     * behavior between different libpng builds!)
     */
    png_colorspace colorspace;
-#endif
 
-#ifdef PNG_iCCP_SUPPORTED
    /* iCCP chunk data. */
    png_charp iccp_name;     /* profile name */
    png_bytep iccp_profile;  /* International Color Consortium profile data */
    png_uint_32 iccp_proflen;  /* ICC profile data length */
-#endif
 
-#ifdef PNG_TEXT_SUPPORTED
    /* The tEXt, and zTXt chunks contain human-readable textual data in
     * uncompressed, compressed, and optionally compressed forms, respectively.
     * The data in "text" is an array of pointers to uncompressed,
@@ -120,16 +113,12 @@ struct png_info_def
    int num_text; /* number of comments read or comments to write */
    int max_text; /* current size of text array */
    png_textp text; /* array of comments read or comments to write */
-#endif /* TEXT */
 
-#ifdef PNG_tIME_SUPPORTED
    /* The tIME chunk holds the last time the displayed image data was
     * modified.  See the png_time struct for the contents of this struct.
     */
    png_time mod_time;
-#endif
 
-#ifdef PNG_sBIT_SUPPORTED
    /* The sBIT chunk specifies the number of significant high-order bits
     * in the pixel data.  Values are in the range [1, bit_depth], and are
     * only specified for the channels in the pixel data.  The contents of
@@ -137,10 +126,7 @@ struct png_info_def
     * (valid & PNG_INFO_sBIT) is non-zero.
     */
    png_color_8 sig_bit; /* significant bits in color channels */
-#endif
 
-#if defined(PNG_tRNS_SUPPORTED) || defined(PNG_READ_EXPAND_SUPPORTED) || \
-defined(PNG_READ_BACKGROUND_SUPPORTED)
    /* The tRNS chunk supplies transparency data for paletted images and
     * other image types that don't need a full alpha channel.  There are
     * "num_trans" transparency values for a paletted image, stored in the
@@ -152,9 +138,7 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
     */
    png_bytep trans_alpha;    /* alpha values for paletted image */
    png_color_16 trans_color; /* transparent color for non-palette image */
-#endif
 
-#if defined(PNG_bKGD_SUPPORTED) || defined(PNG_READ_BACKGROUND_SUPPORTED)
    /* The bKGD chunk gives the suggested image background color if the
     * display program does not have its own background color and the image
     * is needs to composited onto a background before display.  The colors
@@ -162,9 +146,7 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
     * pixel data.  Data is valid if (valid & PNG_INFO_bKGD) is non-zero.
     */
    png_color_16 background;
-#endif
 
-#ifdef PNG_oFFs_SUPPORTED
    /* The oFFs chunk gives the offset in "offset_unit_type" units rightwards
     * and downwards from the top-left corner of the display, page, or other
     * application-specific co-ordinate space.  See the PNG_OFFSET_ defines
@@ -173,9 +155,7 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
    png_int_32 x_offset; /* x offset on page */
    png_int_32 y_offset; /* y offset on page */
    png_byte offset_unit_type; /* offset units type */
-#endif
 
-#ifdef PNG_pHYs_SUPPORTED
    /* The pHYs chunk gives the physical pixel density of the image for
     * display or printing in "phys_unit_type" units (see PNG_RESOLUTION_
     * defines below).  Data is valid if (valid & PNG_INFO_pHYs) is non-zero.
@@ -183,17 +163,11 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
    png_uint_32 x_pixels_per_unit; /* horizontal pixel density */
    png_uint_32 y_pixels_per_unit; /* vertical pixel density */
    png_byte phys_unit_type; /* resolution type (see PNG_RESOLUTION_ below) */
-#endif
 
-#ifdef PNG_eXIf_SUPPORTED
    int num_exif;  /* Added at libpng-1.6.31 */
    png_bytep exif;
-# ifdef PNG_READ_eXIf_SUPPORTED
    png_bytep eXIf_buf;  /* Added at libpng-1.6.32 */
-# endif
-#endif
 
-#ifdef PNG_hIST_SUPPORTED
    /* The hIST chunk contains the relative frequency or importance of the
     * various palette entries, so that a viewer can intelligently select a
     * reduced-color palette, if required.  Data is an array of "num_palette"
@@ -201,9 +175,7 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
     * is non-zero.
     */
    png_uint_16p hist;
-#endif
 
-#ifdef PNG_pCAL_SUPPORTED
    /* The pCAL chunk describes a transformation between the stored pixel
     * values and original physical data values used to create the image.
     * The integer range [0, 2^bit_depth - 1] maps to the floating-point
@@ -222,12 +194,10 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
    png_charpp pcal_params;  /* ASCII strings containing parameter values */
    png_byte pcal_type;      /* equation type (see PNG_EQUATION_ below) */
    png_byte pcal_nparams;   /* number of parameters given in pcal_params */
-#endif
 
 /* New members added in libpng-1.0.6 */
    png_uint_32 free_me;     /* flags items libpng is responsible for freeing */
 
-#ifdef PNG_STORE_UNKNOWN_CHUNKS_SUPPORTED
    /* Storage for unknown chunks that the library doesn't recognize. */
    png_unknown_chunkp unknown_chunks;
 
@@ -235,15 +205,11 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
     * png_struct::user_chunk_cache_max, else overflow can occur.
     */
    int                unknown_chunks_num;
-#endif
 
-#ifdef PNG_sPLT_SUPPORTED
    /* Data on sPLT chunks (there may be more than one). */
    png_sPLT_tp splt_palettes;
    int         splt_palettes_num; /* Match type returned by png_get API */
-#endif
 
-#ifdef PNG_sCAL_SUPPORTED
    /* The sCAL chunk describes the actual physical dimensions of the
     * subject matter of the graphic.  The chunk contains a unit specification
     * a byte value, and two ASCII strings representing floating-point
@@ -254,14 +220,11 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
    png_byte scal_unit;         /* unit of physical scale */
    png_charp scal_s_width;     /* string containing height */
    png_charp scal_s_height;    /* string containing width */
-#endif
 
-#ifdef PNG_INFO_IMAGE_SUPPORTED
    /* Memory has been allocated if (valid & PNG_ALLOCATED_INFO_ROWS)
       non-zero */
    /* Data valid if (valid & PNG_INFO_IDAT) non-zero */
    png_bytepp row_pointers;        /* the image bits */
-#endif
 
 };
 #endif /* PNGINFO_H */

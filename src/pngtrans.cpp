@@ -11,11 +11,12 @@
  * and license in png.h
  */
 
+#include <pngerror.h>
+#include <pngdebug.h>
+#include <trans.h>
+
 #include "pngpriv.h"
 
-#if defined(PNG_READ_SUPPORTED) || defined(PNG_WRITE_SUPPORTED)
-
-#if defined(PNG_READ_BGR_SUPPORTED) || defined(PNG_WRITE_BGR_SUPPORTED)
 /* Turn on BGR-to-RGB mapping */
 void PNGAPI
 png_set_bgr(png_structrp png_ptr)
@@ -27,9 +28,7 @@ png_set_bgr(png_structrp png_ptr)
 
    png_ptr->transformations |= PNG_BGR;
 }
-#endif
 
-#if defined(PNG_READ_SWAP_SUPPORTED) || defined(PNG_WRITE_SWAP_SUPPORTED)
 /* Turn on 16-bit byte swapping */
 void PNGAPI
 png_set_swap(png_structrp png_ptr)
@@ -42,9 +41,7 @@ png_set_swap(png_structrp png_ptr)
    if (png_ptr->bit_depth == 16)
       png_ptr->transformations |= PNG_SWAP_BYTES;
 }
-#endif
 
-#if defined(PNG_READ_PACK_SUPPORTED) || defined(PNG_WRITE_PACK_SUPPORTED)
 /* Turn on pixel packing */
 void PNGAPI
 png_set_packing(png_structrp png_ptr)
@@ -57,14 +54,10 @@ png_set_packing(png_structrp png_ptr)
    if (png_ptr->bit_depth < 8)
    {
       png_ptr->transformations |= PNG_PACK;
-#     ifdef PNG_WRITE_SUPPORTED
-         png_ptr->usr_bit_depth = 8;
-#     endif
+      png_ptr->usr_bit_depth = 8;
    }
 }
-#endif
 
-#if defined(PNG_READ_PACKSWAP_SUPPORTED)||defined(PNG_WRITE_PACKSWAP_SUPPORTED)
 /* Turn on packed pixel swapping */
 void PNGAPI
 png_set_packswap(png_structrp png_ptr)
@@ -77,9 +70,7 @@ png_set_packswap(png_structrp png_ptr)
    if (png_ptr->bit_depth < 8)
       png_ptr->transformations |= PNG_PACKSWAP;
 }
-#endif
 
-#if defined(PNG_READ_SHIFT_SUPPORTED) || defined(PNG_WRITE_SHIFT_SUPPORTED)
 void PNGAPI
 png_set_shift(png_structrp png_ptr, png_const_color_8p true_bits)
 {
@@ -91,10 +82,7 @@ png_set_shift(png_structrp png_ptr, png_const_color_8p true_bits)
    png_ptr->transformations |= PNG_SHIFT;
    png_ptr->shift = *true_bits;
 }
-#endif
 
-#if defined(PNG_READ_INTERLACING_SUPPORTED) || \
-    defined(PNG_WRITE_INTERLACING_SUPPORTED)
 int PNGAPI
 png_set_interlace_handling(png_structrp png_ptr)
 {
@@ -108,9 +96,7 @@ png_set_interlace_handling(png_structrp png_ptr)
 
    return (1);
 }
-#endif
 
-#if defined(PNG_READ_FILLER_SUPPORTED) || defined(PNG_WRITE_FILLER_SUPPORTED)
 /* Add a filler byte on read, or remove a filler or alpha byte on write.
  * The filler type has changed in v0.95 to allow future 2-byte fillers
  * for 48-bit input data, as well as to avoid problems with some compilers
@@ -129,7 +115,6 @@ png_set_filler(png_structrp png_ptr, png_uint_32 filler, int filler_loc)
     */
    if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0)
    {
-#     ifdef PNG_READ_FILLER_SUPPORTED
          /* On read png_set_filler is always valid, regardless of the base PNG
           * format, because other transformations can give a format where the
           * filler code can execute (basically an 8 or 16-bit component RGB or G
@@ -139,16 +124,13 @@ png_set_filler(png_structrp png_ptr, png_uint_32 filler, int filler_loc)
           * confusion in the past.)  The filler is only used in the read code.
           */
          png_ptr->filler = (png_uint_16)filler;
-#     else
          png_app_error(png_ptr, "png_set_filler not supported on read");
          PNG_UNUSED(filler) /* not used in the write case */
          return;
-#     endif
    }
 
    else /* write */
    {
-#     ifdef PNG_WRITE_FILLER_SUPPORTED
          /* On write the usr_channels parameter must be set correctly at the
           * start to record the number of channels in the app-supplied data.
           */
@@ -182,10 +164,6 @@ png_set_filler(png_structrp png_ptr, png_uint_32 filler, int filler_loc)
                    "png_set_filler: inappropriate color type");
                return;
          }
-#     else
-         png_app_error(png_ptr, "png_set_filler not supported on write");
-         return;
-#     endif
    }
 
    /* Here on success - libpng supports the operation, set the transformation
@@ -215,10 +193,7 @@ png_set_add_alpha(png_structrp png_ptr, png_uint_32 filler, int filler_loc)
       png_ptr->transformations |= PNG_ADD_ALPHA;
 }
 
-#endif
 
-#if defined(PNG_READ_SWAP_ALPHA_SUPPORTED) || \
-    defined(PNG_WRITE_SWAP_ALPHA_SUPPORTED)
 void PNGAPI
 png_set_swap_alpha(png_structrp png_ptr)
 {
@@ -229,10 +204,7 @@ png_set_swap_alpha(png_structrp png_ptr)
 
    png_ptr->transformations |= PNG_SWAP_ALPHA;
 }
-#endif
 
-#if defined(PNG_READ_INVERT_ALPHA_SUPPORTED) || \
-    defined(PNG_WRITE_INVERT_ALPHA_SUPPORTED)
 void PNGAPI
 png_set_invert_alpha(png_structrp png_ptr)
 {
@@ -243,9 +215,7 @@ png_set_invert_alpha(png_structrp png_ptr)
 
    png_ptr->transformations |= PNG_INVERT_ALPHA;
 }
-#endif
 
-#if defined(PNG_READ_INVERT_SUPPORTED) || defined(PNG_WRITE_INVERT_SUPPORTED)
 void PNGAPI
 png_set_invert_mono(png_structrp png_ptr)
 {
@@ -293,7 +263,6 @@ png_do_invert(png_row_infop row_info, png_bytep row)
       }
    }
 
-#ifdef PNG_16BIT_SUPPORTED
    else if (row_info->color_type == PNG_COLOR_TYPE_GRAY_ALPHA &&
       row_info->bit_depth == 16)
    {
@@ -308,12 +277,8 @@ png_do_invert(png_row_infop row_info, png_bytep row)
          rp += 4;
       }
    }
-#endif
 }
-#endif
 
-#ifdef PNG_16BIT_SUPPORTED
-#if defined(PNG_READ_SWAP_SUPPORTED) || defined(PNG_WRITE_SWAP_SUPPORTED)
 /* Swaps byte order on 16-bit depth images */
 void /* PRIVATE */
 png_do_swap(png_row_infop row_info, png_bytep row)
@@ -341,10 +306,7 @@ png_do_swap(png_row_infop row_info, png_bytep row)
       }
    }
 }
-#endif
-#endif
 
-#if defined(PNG_READ_PACKSWAP_SUPPORTED)||defined(PNG_WRITE_PACKSWAP_SUPPORTED)
 static const png_byte onebppswaptable[256] = {
    0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0,
    0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
@@ -479,10 +441,7 @@ png_do_packswap(png_row_infop row_info, png_bytep row)
          *rp = table[*rp];
    }
 }
-#endif /* PACKSWAP || WRITE_PACKSWAP */
 
-#if defined(PNG_WRITE_FILLER_SUPPORTED) || \
-    defined(PNG_READ_STRIP_ALPHA_SUPPORTED)
 /* Remove a channel - this used to be 'png_do_strip_filler' but it used a
  * somewhat weird combination of flags to determine what to do.  All the calls
  * to png_do_strip_filler are changed in 1.5.2 to call this instead with the
@@ -611,9 +570,7 @@ png_do_strip_channel(png_row_infop row_info, png_bytep row, int at_start)
    /* Fix the rowbytes value. */
    row_info->rowbytes = (size_t)(dp-row);
 }
-#endif
 
-#if defined(PNG_READ_BGR_SUPPORTED) || defined(PNG_WRITE_BGR_SUPPORTED)
 /* Swaps red and blue bytes within a pixel */
 void /* PRIVATE */
 png_do_bgr(png_row_infop row_info, png_bytep row)
@@ -652,7 +609,6 @@ png_do_bgr(png_row_infop row_info, png_bytep row)
          }
       }
 
-#ifdef PNG_16BIT_SUPPORTED
       else if (row_info->bit_depth == 16)
       {
          if (row_info->color_type == PNG_COLOR_TYPE_RGB)
@@ -687,13 +643,9 @@ png_do_bgr(png_row_infop row_info, png_bytep row)
             }
          }
       }
-#endif
    }
 }
-#endif /* READ_BGR || WRITE_BGR */
 
-#if defined(PNG_READ_CHECK_FOR_INVALID_INDEX_SUPPORTED) || \
-    defined(PNG_WRITE_CHECK_FOR_INVALID_INDEX_SUPPORTED)
 /* Added at libpng-1.5.10 */
 void /* PRIVATE */
 png_do_check_palette_indexes(png_structrp png_ptr, png_row_infop row_info)
@@ -793,11 +745,7 @@ png_do_check_palette_indexes(png_structrp png_ptr, png_row_infop row_info)
       }
    }
 }
-#endif /* CHECK_FOR_INVALID_INDEX */
 
-#if defined(PNG_READ_USER_TRANSFORM_SUPPORTED) || \
-    defined(PNG_WRITE_USER_TRANSFORM_SUPPORTED)
-#ifdef PNG_USER_TRANSFORM_PTR_SUPPORTED
 void PNGAPI
 png_set_user_transform_info(png_structrp png_ptr, png_voidp
    user_transform_ptr, int user_transform_depth, int user_transform_channels)
@@ -807,7 +755,6 @@ png_set_user_transform_info(png_structrp png_ptr, png_voidp
    if (png_ptr == NULL)
       return;
 
-#ifdef PNG_READ_USER_TRANSFORM_SUPPORTED
    if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
       (png_ptr->flags & PNG_FLAG_ROW_INIT) != 0)
    {
@@ -815,20 +762,17 @@ png_set_user_transform_info(png_structrp png_ptr, png_voidp
           "info change after png_start_read_image or png_read_update_info");
       return;
    }
-#endif
 
    png_ptr->user_transform_ptr = user_transform_ptr;
    png_ptr->user_transform_depth = (png_byte)user_transform_depth;
    png_ptr->user_transform_channels = (png_byte)user_transform_channels;
 }
-#endif
 
 /* This function returns a pointer to the user_transform_ptr associated with
  * the user transform functions.  The application should free any memory
  * associated with this pointer before png_write_destroy and png_read_destroy
  * are called.
  */
-#ifdef PNG_USER_TRANSFORM_PTR_SUPPORTED
 png_voidp PNGAPI
 png_get_user_transform_ptr(png_const_structrp png_ptr)
 {
@@ -837,9 +781,7 @@ png_get_user_transform_ptr(png_const_structrp png_ptr)
 
    return png_ptr->user_transform_ptr;
 }
-#endif
 
-#ifdef PNG_USER_TRANSFORM_INFO_SUPPORTED
 png_uint_32 PNGAPI
 png_get_current_row_number(png_const_structrp png_ptr)
 {
@@ -859,6 +801,3 @@ png_get_current_pass_number(png_const_structrp png_ptr)
       return png_ptr->pass;
    return 8; /* invalid */
 }
-#endif /* USER_TRANSFORM_INFO */
-#endif /* READ_USER_TRANSFORM || WRITE_USER_TRANSFORM */
-#endif /* READ || WRITE */

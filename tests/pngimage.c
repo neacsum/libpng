@@ -50,19 +50,6 @@
 #  define SKIP 0
 #endif
 
-#if PNG_LIBPNG_VER < 10700
-   /* READ_PNG and WRITE_PNG were not defined, so: */
-#  ifdef PNG_INFO_IMAGE_SUPPORTED
-#     ifdef PNG_SEQUENTIAL_READ_SUPPORTED
-#        define PNG_READ_PNG_SUPPORTED
-#     endif /* SEQUENTIAL_READ */
-#     ifdef PNG_WRITE_SUPPORTED
-#        define PNG_WRITE_PNG_SUPPORTED
-#     endif /* WRITE */
-#  endif /* INFO_IMAGE */
-#endif /* pre 1.7.0 */
-
-#ifdef PNG_READ_PNG_SUPPORTED
 /* If a transform is valid on both read and write this implies that if the
  * transform is applied to read it must also be applied on write to produce
  * meaningful data.  This is because these transforms when performed on read
@@ -131,35 +118,18 @@ static struct transform_info
       COLOR_MASK_ ## cm_required, COLOR_MASK_ ## cm_absent, BD_ ## bd,\
       TRANSFORM_ ## when, 0/*!tested*/ }
 
-#ifdef PNG_READ_STRIP_16_TO_8_SUPPORTED
    T(STRIP_16,            NONE, X,   X,   16,  R),
       /* drops the bottom 8 bits when bit depth is 16 */
-#endif
-#ifdef PNG_READ_STRIP_ALPHA_SUPPORTED
    T(STRIP_ALPHA,         NONE, A,   X,  ALL,  R),
       /* removes the alpha channel if present */
-#endif
-#ifdef PNG_WRITE_PACK_SUPPORTED
 #  define TRANSFORM_RW_PACK TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_PACK TRANSFORM_R
-#endif
-#ifdef PNG_READ_PACK_SUPPORTED
    T(PACKING,             NONE, X,   X,  LOW, RW_PACK),
       /* unpacks low-bit-depth components into 1 byte per component on read,
        * reverses this on write.
        */
-#endif
-#ifdef PNG_WRITE_PACKSWAP_SUPPORTED
 #  define TRANSFORM_RW_PACKSWAP TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_PACKSWAP TRANSFORM_R
-#endif
-#ifdef PNG_READ_PACKSWAP_SUPPORTED
    T(PACKSWAP,            NONE, X,   X,  LOW, RW_PACKSWAP),
       /* reverses the order of low-bit-depth components packed into a byte */
-#endif
-#ifdef PNG_READ_EXPAND_SUPPORTED
    T(EXPAND,              NONE, P,   X,  ALL,  R),
       /* expands PLTE PNG files to RGB (no tRNS) or RGBA (tRNS) *
        * Note that the 'EXPAND' transform does lots of different things: */
@@ -167,68 +137,31 @@ static struct transform_info
       /* expands grayscale PNG files to RGB, or RGBA */
    T(EXPAND,              tRNS, X,   A,  ALL,  R),
       /* expands the tRNS chunk in files without alpha */
-#endif
-#ifdef PNG_WRITE_INVERT_SUPPORTED
 #  define TRANSFORM_RW_INVERT TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_INVERT TRANSFORM_R
-#endif
-#ifdef PNG_READ_INVERT_SUPPORTED
    T(INVERT_MONO,         NONE, X,   C,  ALL, RW_INVERT),
       /* converts gray-scale components to 1..0 from 0..1 */
-#endif
-#ifdef PNG_WRITE_SHIFT_SUPPORTED
 #  define TRANSFORM_RW_SHIFT TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_SHIFT TRANSFORM_R
-#endif
-#ifdef PNG_READ_SHIFT_SUPPORTED
    T(SHIFT,               sBIT, X,   X,  ALL, RW_SHIFT),
       /* reduces component values to the original range based on the sBIT chunk,
        * this is only partially reversible - the low bits are lost and cannot be
        * recovered on write.  In fact write code replicates the bits to generate
        * new low-order bits.
        */
-#endif
-#ifdef PNG_WRITE_BGR_SUPPORTED
 #  define TRANSFORM_RW_BGR TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_BGR TRANSFORM_R
-#endif
-#ifdef PNG_READ_BGR_SUPPORTED
    T(BGR,                 NONE, C,   P, TRUE, RW_BGR),
       /* reverses the rgb component values of true-color pixels */
-#endif
-#ifdef PNG_WRITE_SWAP_ALPHA_SUPPORTED
-#  define TRANSFORM_RW_SWAP_ALPHA TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_SWAP_ALPHA TRANSFORM_R
-#endif
-#ifdef PNG_READ_SWAP_ALPHA_SUPPORTED
+#define TRANSFORM_RW_SWAP_ALPHA TRANSFORM_RW
    T(SWAP_ALPHA,          NONE, A,   X, TRUE, RW_SWAP_ALPHA),
       /* swaps the alpha channel of RGBA or GA pixels to the front - ARGB or
        * AG, on write reverses the process.
        */
-#endif
-#ifdef PNG_WRITE_SWAP_SUPPORTED
-#  define TRANSFORM_RW_SWAP TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_SWAP TRANSFORM_R
-#endif
-#ifdef PNG_READ_SWAP_SUPPORTED
+
+#define TRANSFORM_RW_SWAP TRANSFORM_RW
    T(SWAP_ENDIAN,         NONE, X,   P,   16, RW_SWAP),
       /* byte-swaps 16-bit component values */
-#endif
-#ifdef PNG_WRITE_INVERT_ALPHA_SUPPORTED
 #  define TRANSFORM_RW_INVERT_ALPHA TRANSFORM_RW
-#else
-#  define TRANSFORM_RW_INVERT_ALPHA TRANSFORM_R
-#endif
-#ifdef PNG_READ_INVERT_ALPHA_SUPPORTED
    T(INVERT_ALPHA,        NONE, A,   X, TRUE, RW_INVERT_ALPHA),
       /* converts an alpha channel from 0..1 to 1..0 */
-#endif
-#ifdef PNG_WRITE_FILLER_SUPPORTED
    T(STRIP_FILLER_BEFORE, NONE, A,   P, TRUE,  W), /* 'A' for a filler! */
       /* on write skips a leading filler channel; testing requires data with a
        * filler channel so this is produced from RGBA or GA images by removing
@@ -236,8 +169,6 @@ static struct transform_info
        */
    T(STRIP_FILLER_AFTER,  NONE, A,   P, TRUE,  W),
       /* on write strips a trailing filler channel */
-#endif
-#ifdef PNG_READ_GRAY_TO_RGB_SUPPORTED
    T(GRAY_TO_RGB,         NONE, X,   C,  ALL,  R),
       /* expands grayscale images to RGB, also causes the palette part of
        * 'EXPAND' to happen.  Low bit depth grayscale images are expanded to
@@ -249,8 +180,6 @@ static struct transform_info
       /* The 'palette' side effect mentioned above; a bit bogus but this is the
        * way the libpng code works.
        */
-#endif
-#ifdef PNG_READ_EXPAND_16_SUPPORTED
    T(EXPAND_16,           NONE, X,   X,  PAL,  R),
       /* expands images to 16-bits per component, as a side effect expands
        * palette images to RGB and expands the tRNS chunk if present, so it can
@@ -260,11 +189,8 @@ static struct transform_info
       /* side effect of EXPAND_16 - expands the tRNS chunk in an RGB or G 16-bit
        * image.
        */
-#endif
-#ifdef PNG_READ_SCALE_16_TO_8_SUPPORTED
    T(SCALE_16,            NONE, X,   X,   16,  R),
       /* scales 16-bit components to 8-bits. */
-#endif
 
    { NULL /*name*/, 0, 0, 0, 0, 0, 0, 0/*!tested*/ }
 
@@ -897,10 +823,8 @@ read_png(struct display *dp, struct buffer *bp, const char *operation,
    if (ip == NULL)
       display_log(dp, LIBPNG_ERROR, "failed to create info struct");
 
-#  ifdef PNG_SET_USER_LIMITS_SUPPORTED
       /* Remove the user limits, if any */
       png_set_user_limits(pp, 0x7fffffff, 0x7fffffff);
-#  endif
 
    /* Set the IO handling */
    buffer_start_read(bp);
@@ -1105,7 +1029,6 @@ compare_read(struct display *dp, int applied_transforms)
       }
 
       else
-#     ifdef PNG_sBIT_SUPPORTED
       {
          unsigned long y;
          int bpp;   /* bits-per-pixel then bytes-per-pixel */
@@ -1268,10 +1191,6 @@ compare_read(struct display *dp, int applied_transforms)
             }
          } /* for y */
       }
-#     else /* !sBIT */
-         display_log(dp, INTERNAL_ERROR,
-               "active shift transform but no sBIT support");
-#     endif /* !sBIT */
    }
 
    return 1; /* compare succeeded */
@@ -1716,11 +1635,3 @@ main(int argc, char **argv)
       return errors != 0;
    }
 }
-#else /* !READ_PNG */
-int
-main(void)
-{
-   fprintf(stderr, "pngimage: no support for png_read/write_image\n");
-   return SKIP;
-}
-#endif

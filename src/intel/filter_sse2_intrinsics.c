@@ -13,8 +13,6 @@
 
 #include <pngpriv.h>
 
-#ifdef PNG_READ_SUPPORTED
-
 #if PNG_INTEL_SSE_IMPLEMENTATION > 0
 
 #include <immintrin.h>
@@ -388,4 +386,3 @@ void png_read_filter_row_paeth4_sse2(png_row_infop row_info, png_bytep row,
 }
 
 #endif /* PNG_INTEL_SSE_IMPLEMENTATION > 0 */
-#endif /* READ */

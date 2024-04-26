@@ -29,10 +29,6 @@
 
 #include <png/png.h>
 
-#if defined(PNG_READ_SUPPORTED) && defined(PNG_STDIO_SUPPORTED) && \
-    defined (PNG_iCCP_SUPPORTED)
-
-
 static int verbose = 1;
 static png_byte no_profile[] = "no profile";
 
@@ -185,4 +181,3 @@ main(int argc, char **argv)
    /* Exit code is true if any extract succeeds */
    return extracted == 0;
 }
-#endif /* READ && STDIO && iCCP */

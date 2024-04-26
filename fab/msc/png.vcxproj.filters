@@ -39,9 +39,24 @@
     <ClInclude Include="..\..\include\png\libconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\pngmem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\pngerror.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\rutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\trans.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\wutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)src\png.c">
+    <ClCompile Include="..\..\src\png.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(SolutionDir)src\intel\filter_sse2_intrinsics.c">
@@ -50,46 +65,46 @@
     <ClCompile Include="$(SolutionDir)src\intel\intel_init.c">
       <Filter>Source Files\intel</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngerror.c">
+    <ClCompile Include="..\..\src\pngerror.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngget.c">
+    <ClCompile Include="..\..\src\pngget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngmem.c">
+    <ClCompile Include="..\..\src\pngmem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngpread.c">
+    <ClCompile Include="..\..\src\pngpread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngread.c">
+    <ClCompile Include="..\..\src\pngread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngrio.c">
+    <ClCompile Include="..\..\src\pngrio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngrtran.c">
+    <ClCompile Include="..\..\src\pngrtran.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngrutil.c">
+    <ClCompile Include="..\..\src\pngrutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngset.c">
+    <ClCompile Include="..\..\src\pngset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngtrans.c">
+    <ClCompile Include="..\..\src\pngtrans.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngwio.c">
+    <ClCompile Include="..\..\src\pngwio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngwrite.c">
+    <ClCompile Include="..\..\src\pngwrite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngwtran.c">
+    <ClCompile Include="..\..\src\pngwtran.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)src\pngwutil.c">
+    <ClCompile Include="..\..\src\pngwutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

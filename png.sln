@@ -76,6 +76,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "genpng", "fab\msc\tools\gen
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makesRGB", "fab\msc\tools\makesRGB.vcxproj", "{C9FE6623-A4D2-42AE-8CFD-07D645056079}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3EC069BC-327B-4060-99BB-C7243F37A963} = {3EC069BC-327B-4060-99BB-C7243F37A963}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pngcp", "fab\msc\tools\pngcp.vcxproj", "{2704F8A4-B3F2-428D-A5A0-BC0FB03D930D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -83,8 +86,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pngcp", "fab\msc\tools\pngc
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pngfix", "fab\msc\tools\pngfix.vcxproj", "{7B6DC8F6-364C-4371-A015-749B87A8278A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3EC069BC-327B-4060-99BB-C7243F37A963} = {3EC069BC-327B-4060-99BB-C7243F37A963}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "png-fix-itxt", "fab\msc\tools\png-fix-itxt.vcxproj", "{808005BE-47D5-411B-B778-5DC9970FD329}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{62C6769B-95C6-49C7-8C8C-08316B4F9459}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -40,25 +40,13 @@
 
 #define PROGRAM_NAME "pngfix"
 
-/* Define the following to use this program against your installed libpng,
- * rather than the one being built here:
- */
-#ifdef PNG_FREESTANDING_TESTS
-#  include <png.h>
-#else
-#  include <png/png.h>
-#endif
+#include <png/png.h>
 
 #if PNG_LIBPNG_VER < 10603 /* 1.6.3 */
 #  error "pngfix will not work with libpng prior to 1.6.3"
 #endif
 
-#ifdef PNG_SETJMP_SUPPORTED
 #include <setjmp.h>
-
-#if defined(PNG_READ_SUPPORTED) && defined(PNG_EASY_ACCESS_SUPPORTED) &&\
-   (defined(PNG_READ_DEINTERLACE_SUPPORTED) ||\
-    defined(PNG_READ_INTERLACING_SUPPORTED))
 
 /* zlib.h defines the structure z_stream, an instance of which is included
  * in this structure and is required for decompressing the LZ compressed
@@ -86,21 +74,6 @@
 #endif
 
 #if ZLIB_VERNUM >= 0x1240
-
-/* Copied from pngpriv.h */
-#ifdef __cplusplus
-#  define voidcast(type, value) static_cast<type>(value)
-#  define constcast(type, value) const_cast<type>(value)
-#  define aligncast(type, value) \
-   static_cast<type>(static_cast<void*>(value))
-#  define aligncastconst(type, value) \
-   static_cast<type>(static_cast<const void*>(value))
-#else
-#  define voidcast(type, value) (value)
-#  define constcast(type, value) ((type)(value))
-#  define aligncast(type, value) ((void*)(value))
-#  define aligncastconst(type, value) ((const void*)(value))
-#endif /* __cplusplus */
 
 #if PNG_LIBPNG_VER < 10700
 /* Chunk tags (copied from pngpriv.h) */
@@ -146,11 +119,6 @@
 
 /* Is it safe to copy? */
 #define SAFE_TO_COPY(chunk) (((chunk) & PNG_U32(0,0,0,32)) != 0)
-
-/* Fix ups for builds with limited read support */
-#ifndef PNG_ERROR_TEXT_SUPPORTED
-#  define png_error(a,b) png_err(a)
-#endif
 
 /********************************* UTILITIES **********************************/
 /* UNREACHED is a value to cause an assert to fail. Because of the way the
@@ -449,7 +417,7 @@ static void
 make_random_bytes(png_uint_32* seed, void* pv, size_t size)
 {
    png_uint_32 u0 = seed[0], u1 = seed[1];
-   png_bytep bytes = voidcast(png_bytep, pv);
+   png_bytep bytes = (png_bytep)pv;
 
    /* There are thirty-three bits; the next bit in the sequence is bit-33 XOR
     * bit-20.  The top 1 bit is in u1, the bottom 32 are in u0.
@@ -671,7 +639,7 @@ IDAT_list_extend(struct IDAT_list *tail)
       if (length < tail->length) /* arithmetic overflow */
          length = tail->length;
 
-      next = voidcast(IDAT_list*, malloc(IDAT_list_size(NULL, length)));
+      next = (struct IDAT_list*) malloc(IDAT_list_size(NULL, length));
       CLEAR(*next);
 
       /* The caller must handle this: */
@@ -3540,26 +3508,25 @@ get_control(png_const_structrp png_ptr)
    /* This just returns the (file*).  The chunk and idat control structures
     * don't always exist.
     */
-   struct control *control = voidcast(struct control*,
-      png_get_error_ptr(png_ptr));
-   return &control->file;
+   struct control *ctrl = (struct control*)png_get_error_ptr(png_ptr);
+   return &ctrl->file;
 }
 
 static void
 allocate(struct file *file, int allocate_idat)
 {
-   struct control *control = voidcast(struct control*, file->alloc_ptr);
+   struct control *ctrl = (struct control*) file->alloc_ptr;
 
    if (allocate_idat)
    {
       assert(file->idat == NULL);
-      IDAT_init(&control->idat, file);
+      IDAT_init(&ctrl->idat, file);
    }
 
    else /* chunk */
    {
       assert(file->chunk == NULL);
-      chunk_init(&control->chunk, file);
+      chunk_init(&ctrl->chunk, file);
    }
 }
 
@@ -3598,15 +3565,13 @@ read_png(struct control *control)
    rc = setjmp(control->file.jmpbuf);
    if (rc == 0)
    {
-#     ifdef PNG_SET_USER_LIMITS_SUPPORTED
-         /* Remove any limits on the size of PNG files that can be read,
-          * without this we may reject files based on built-in safety
-          * limits.
-          */
-         png_set_user_limits(png_ptr, 0x7fffffff, 0x7fffffff);
-         png_set_chunk_cache_max(png_ptr, 0);
-         png_set_chunk_malloc_max(png_ptr, 0);
-#     endif
+      /* Remove any limits on the size of PNG files that can be read,
+      * without this we may reject files based on built-in safety
+      * limits.
+      */
+      png_set_user_limits(png_ptr, 0x7fffffff, 0x7fffffff);
+      png_set_chunk_cache_max(png_ptr, 0);
+      png_set_chunk_malloc_max(png_ptr, 0);
 
       png_set_read_fn(png_ptr, control, read_callback);
 
@@ -4029,22 +3994,4 @@ main(void)
    return 77;
 }
 #endif /* ZLIB_VERNUM */
-
-#else /* No read support */
-
-int
-main(void)
-{
-   fprintf(stderr, "pngfix does not work without read deinterlace support\n");
-   return 77;
-}
-#endif /* PNG_READ_SUPPORTED && PNG_EASY_ACCESS_SUPPORTED */
-#else /* No setjmp support */
-int
-main(void)
-{
-   fprintf(stderr, "pngfix does not work without setjmp support\n");
-   return 77;
-}
-#endif /* PNG_SETJMP_SUPPORTED */
 

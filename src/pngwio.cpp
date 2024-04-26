@@ -20,8 +20,6 @@
 
 #include "pngpriv.h"
 
-#ifdef PNG_WRITE_SUPPORTED
-
 /* Write the data to whatever output you are using.  The default routine
  * writes to a file pointer.  Note that this routine sometimes gets called
  * with very small lengths, so you should implement some kind of simple
@@ -34,39 +32,35 @@ png_write_data(png_structrp png_ptr, png_const_bytep data, size_t length)
 {
    /* NOTE: write_data_fn must not change the buffer! */
    if (png_ptr->write_data_fn != NULL )
-      (*(png_ptr->write_data_fn))(png_ptr, png_constcast(png_bytep,data),
-          length);
+      (*(png_ptr->write_data_fn))(png_ptr, data, length);
 
    else
       png_error(png_ptr, "Call to NULL write function");
 }
 
-#ifdef PNG_STDIO_SUPPORTED
 /* This is the function that does the actual writing of data.  If you are
  * not writing to a standard C stream, you should create a replacement
  * write_data function and use it at run time with png_set_write_fn(), rather
  * than changing the library.
  */
 void PNGCBAPI
-png_default_write_data(png_struct* png_ptr, png_bytep data, size_t length)
+png_default_write_data(png_struct* png_ptr, png_const_bytep data, size_t length)
 {
    size_t check;
 
    if (png_ptr == NULL)
       return;
 
-   check = fwrite(data, 1, length, (png_FILE_p)(png_ptr->io_ptr));
+   check = fwrite(data, 1, length, (FILE*)png_ptr->io_ptr);
 
    if (check != length)
       png_error(png_ptr, "Write Error");
 }
-#endif
 
 /* This function is called to output any data pending writing (normally
  * to disk).  After png_flush is called, there should be no data pending
  * writing in any buffers.
  */
-#ifdef PNG_WRITE_FLUSH_SUPPORTED
 void /* PRIVATE */
 png_flush(png_structrp png_ptr)
 {
@@ -74,20 +68,17 @@ png_flush(png_structrp png_ptr)
       (*(png_ptr->output_flush_fn))(png_ptr);
 }
 
-#  ifdef PNG_STDIO_SUPPORTED
 void PNGCBAPI
 png_default_flush(png_struct* png_ptr)
 {
-   png_FILE_p io_ptr;
+   FILE* io_ptr;
 
    if (png_ptr == NULL)
       return;
 
-   io_ptr = png_voidcast(png_FILE_p, (png_ptr->io_ptr));
+   io_ptr = (FILE*)png_ptr->io_ptr;
    fflush(io_ptr);
 }
-#  endif
-#endif
 
 /* This function allows the application to supply new output functions for
  * libpng if standard C streams aren't being used.
@@ -120,25 +111,17 @@ png_default_flush(png_struct* png_ptr)
  */
 void PNGAPI
 png_set_write_fn(png_structrp png_ptr, png_voidp io_ptr,
-    png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn)
+    png_write_ptr write_data_fn, png_flush_ptr output_flush_fn)
 {
    if (png_ptr == NULL)
       return;
 
    png_ptr->io_ptr = io_ptr;
 
-#ifdef PNG_STDIO_SUPPORTED
    if (write_data_fn != NULL)
       png_ptr->write_data_fn = write_data_fn;
-
    else
       png_ptr->write_data_fn = png_default_write_data;
-#else
-   png_ptr->write_data_fn = write_data_fn;
-#endif
-
-#ifdef PNG_WRITE_FLUSH_SUPPORTED
-#  ifdef PNG_STDIO_SUPPORTED
 
    if (output_flush_fn != NULL)
       png_ptr->output_flush_fn = output_flush_fn;
@@ -146,14 +129,6 @@ png_set_write_fn(png_structrp png_ptr, png_voidp io_ptr,
    else
       png_ptr->output_flush_fn = png_default_flush;
 
-#  else
-   png_ptr->output_flush_fn = output_flush_fn;
-#  endif
-#else
-   PNG_UNUSED(output_flush_fn)
-#endif /* WRITE_FLUSH */
-
-#ifdef PNG_READ_SUPPORTED
    /* It is an error to read while writing a png file */
    if (png_ptr->read_data_fn != NULL)
    {
@@ -163,6 +138,4 @@ png_set_write_fn(png_structrp png_ptr, png_voidp io_ptr,
           "Can't set both read_data_fn and write_data_fn in the"
           " same structure");
    }
-#endif
 }
-#endif /* WRITE */

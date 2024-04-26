@@ -82,11 +82,6 @@
 
 #include <png/png.h>
 
-#if !defined(PNG_SIMPLIFIED_WRITE_SUPPORTED) || !defined(PNG_STDIO_SUPPORTED)
-#error("Missing required libpng features")
-#endif
-
-
 static const struct color
 {
    const char *name;

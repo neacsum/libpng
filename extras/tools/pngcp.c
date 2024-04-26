@@ -55,22 +55,6 @@
 #  include <png/png.h>
 #endif
 
-#if PNG_LIBPNG_VER < 10700
-   /* READ_PNG and WRITE_PNG were not defined, so: */
-#  ifdef PNG_INFO_IMAGE_SUPPORTED
-#     ifdef PNG_SEQUENTIAL_READ_SUPPORTED
-#        define PNG_READ_PNG_SUPPORTED
-#     endif /* SEQUENTIAL_READ */
-#     ifdef PNG_WRITE_SUPPORTED
-#        define PNG_WRITE_PNG_SUPPORTED
-#     endif /* WRITE */
-#  endif /* INFO_IMAGE */
-#endif /* pre 1.7.0 */
-
-#if !defined(PNG_READ_PNG_SUPPORTED) || !defined(PNG_WRITE_PNG_SUPPORTED)
-#error("no support for png_read/write_image")
-#endif
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -175,12 +159,8 @@ typedef enum
 #define SIZES           0x080 /* Report input and output sizes */
 #define SEARCH          0x100 /* Search IDAT compression options */
 #define NOWRITE         0x200 /* Do not write an output file */
-#ifdef PNG_CHECK_FOR_INVALID_INDEX_SUPPORTED
-#  define IGNORE_INDEX  0x400 /* Ignore out of range palette indices (BAD!) */
-#  ifdef PNG_GET_PALETTE_MAX_SUPPORTED
-#     define FIX_INDEX  0x800 /* 'Fix' out of range palette indices (OK) */
-#  endif /* GET_PALETTE_MAX */
-#endif /* CHECK_FOR_INVALID_INDEX */
+#define IGNORE_INDEX    0x400 /* Ignore out of range palette indices (BAD!) */
+#define FIX_INDEX       0x800 /* 'Fix' out of range palette indices (OK) */
 #define OPTION     0x80000000 /* Used for handling options */
 #define LIST       0x80000001 /* Used for handling options */
 
@@ -221,8 +201,6 @@ vl_compression[] =
 },
 #endif /* SW_COMPRESS_png_level */
 
-#if defined(PNG_WRITE_CUSTOMIZE_COMPRESSION_SUPPORTED) ||\
-    defined(PNG_WRITE_CUSTOMIZE_ZTXT_COMPRESSION_SUPPORTED)
 vl_strategy[] =
 {
    /* This controls the order of search. */
@@ -233,7 +211,6 @@ vl_strategy[] =
    { "default", Z_DEFAULT_STRATEGY },
    { all, 0 }
 },
-#ifdef PNG_WRITE_CUSTOMIZE_ZTXT_COMPRESSION_SUPPORTED
 vl_windowBits_text[] =
 {
    { "default", MAX_WBITS/*from zlib*/ },
@@ -241,7 +218,6 @@ vl_windowBits_text[] =
    RANGE(8, MAX_WBITS/*from zlib*/),
    { all, 0 }
 },
-#endif /* text compression */
 vl_level[] =
 {
    { "default", Z_DEFAULT_COMPRESSION /* this is -1 */ },
@@ -264,8 +240,6 @@ vl_memLevel[] =
    RANGE(6, MAX_MEM_LEVEL/*zlib*/), /* exclude 5 and below: zlib bugs */
    { all, 0 }
 },
-#endif /* WRITE_CUSTOMIZE_*COMPRESSION */
-#ifdef PNG_WRITE_FILTER_SUPPORTED
 vl_filter[] =
 {
    { all,      PNG_ALL_FILTERS   },
@@ -276,7 +250,6 @@ vl_filter[] =
    { "avg",    PNG_FILTER_AVG    },
    { "paeth",  PNG_FILTER_PAETH  }
 },
-#endif /* WRITE_FILTER */
 #ifdef PNG_PNGCP_TIMING_SUPPORTED
 #  define PNGCP_TIME_READ  1
 #  define PNGCP_TIME_WRITE 2
@@ -302,7 +275,6 @@ vl_IDAT_size[] = /* for png_set_IDAT_size */
 vl_log_depth[] = { { "on", 1 }, { "off", 0 }, RANGE(0, SL) },
 vl_on_off[] = { { "on", 1 }, { "off", 0 } };
 
-#ifdef PNG_WRITE_CUSTOMIZE_COMPRESSION_SUPPORTED
 static value_list
 vl_windowBits_IDAT[] =
 {
@@ -311,7 +283,6 @@ vl_windowBits_IDAT[] =
    RANGE(8, MAX_WBITS), /* modified by set_windowBits_hi */
    { all, 0 }
 };
-#endif /* IDAT compression */
 
 typedef struct option
 {
@@ -352,23 +323,14 @@ static const option options[] =
    { oname, type, search, VLSIZE(name), VLNAME(name) },
 #  define VLO(oname, name, search) VL(oname, name, OPTION, search)
 
-#  ifdef PNG_WRITE_CUSTOMIZE_COMPRESSION_SUPPORTED
-#     define VLCIDAT(name) VLO(#name, name, 1/*search*/)
-#     ifdef PNG_SW_COMPRESS_level
-#        define VLCiCCP(name) VLO("ICC-profile-" #name, name, 0/*search*/)
-#     else
-#        define VLCiCCP(name)
-#     endif
+#  define VLCIDAT(name) VLO(#name, name, 1/*search*/)
+#  ifdef PNG_SW_COMPRESS_level
+#     define VLCiCCP(name) VLO("ICC-profile-" #name, name, 0/*search*/)
 #  else
-#     define VLCIDAT(name)
 #     define VLCiCCP(name)
-#  endif /* WRITE_CUSTOMIZE_COMPRESSION */
+#  endif
 
-#  ifdef PNG_WRITE_CUSTOMIZE_ZTXT_COMPRESSION_SUPPORTED
 #     define VLCzTXt(name) VLO("text-" #name, name, 0/*search*/)
-#  else
-#     define VLCzTXt(name)
-#  endif /* WRITE_CUSTOMIZE_ZTXT_COMPRESSION */
 
 #  define VLC(name) VLCIDAT(name) VLCiCCP(name) VLCzTXt(name)
 
@@ -395,9 +357,7 @@ static const option options[] =
 
    /* LIST settings */
 #  define VLL(name, search) VL(#name, name, LIST, search)
-#ifdef PNG_WRITE_FILTER_SUPPORTED
    VLL(filter, 0)
-#endif /* WRITE_FILTER */
 #ifdef PNG_PNGCP_TIMING_SUPPORTED
    VLL(time, 0)
 #endif /* PNGCP_TIMING */
@@ -443,7 +403,7 @@ struct display
    size_t read_size;
    png_struct*      read_pp;
    png_infop        ip;
-#  if PNG_LIBPNG_VER < 10700 && defined PNG_TEXT_SUPPORTED
+#  if PNG_LIBPNG_VER < 10700
       png_textp     text_ptr; /* stash of text chunks */
       int           num_text;
       int           text_stashed;
@@ -532,7 +492,7 @@ display_init(struct display *dp)
    dp->ip = NULL;
    dp->write_pp = NULL;
    dp->min_windowBits = -1; /* this is an OPTIND, so -1 won't match anything */
-#  if PNG_LIBPNG_VER < 10700 && defined PNG_TEXT_SUPPORTED
+#  if PNG_LIBPNG_VER < 10700
       dp->text_ptr = NULL;
       dp->num_text = 0;
       dp->text_stashed = 0;
@@ -574,7 +534,7 @@ display_clean(struct display *dp)
    display_clean_write(dp);
    dp->output_file = NULL;
 
-#  if PNG_LIBPNG_VER < 10700 && defined PNG_TEXT_SUPPORTED
+#  if PNG_LIBPNG_VER < 10700
       /* This is actually created and used by the write code, but only
        * once; it has to be retained for subsequent writes of the same file.
        */
@@ -675,7 +635,7 @@ display_log(struct display *dp, error_level level, const char *fmt, ...)
    }
 }
 
-#if PNG_LIBPNG_VER < 10700 && defined PNG_TEXT_SUPPORTED
+#if PNG_LIBPNG_VER < 10700
 static void
 text_stash(struct display *dp)
 {
@@ -703,7 +663,7 @@ text_stash(struct display *dp)
 
    if (dp->num_text > 0)
    {
-      dp->text_ptr = voidcast(png_textp, malloc(dp->num_text * sizeof *chunks));
+      dp->text_ptr = (png_textp)malloc(dp->num_text * sizeof *chunks);
 
       if (dp->text_ptr == NULL)
          display_log(dp, APP_ERROR, "text chunks: stash malloc failed");
@@ -1790,9 +1750,7 @@ read_png(struct display *dp, const char *filename)
    if (dp->read_pp == NULL)
       display_log(dp, LIBPNG_ERROR, "failed to create read struct");
 
-#  ifdef PNG_BENIGN_ERRORS_SUPPORTED
       png_set_benign_errors(dp->read_pp, 1/*allowed*/);
-#  endif /* BENIGN_ERRORS */
 
 #  ifdef FIX_INDEX
       if ((dp->options & FIX_INDEX) != 0)
@@ -1816,15 +1774,10 @@ read_png(struct display *dp, const char *filename)
    /* Set the IO handling */
    png_set_read_fn(dp->read_pp, dp, read_function);
 
-#  ifdef PNG_HANDLE_AS_UNKNOWN_SUPPORTED
-      png_set_keep_unknown_chunks(dp->read_pp, PNG_HANDLE_CHUNK_ALWAYS, NULL,
-            0);
-#  endif /* HANDLE_AS_UNKNOWN */
+   png_set_keep_unknown_chunks(dp->read_pp, PNG_HANDLE_CHUNK_ALWAYS, NULL, 0);
 
-#  ifdef PNG_SET_USER_LIMITS_SUPPORTED
-      /* Remove the user limits, if any */
-      png_set_user_limits(dp->read_pp, 0x7fffffff, 0x7fffffff);
-#  endif /* SET_USER_LIMITS */
+   /* Remove the user limits, if any */
+   png_set_user_limits(dp->read_pp, 0x7fffffff, 0x7fffffff);
 
    /* Now read the PNG. */
    start_timer(dp, PNGCP_TIME_READ);
@@ -1918,7 +1871,7 @@ display_start_write(struct display *dp, const char *filename)
 }
 
 static void PNGCBAPI
-write_function(png_struct* pp, png_bytep data, size_t size)
+write_function(png_struct* pp, png_const_bytep data, size_t size)
 {
    struct display *dp = get_dp(pp);
 
@@ -1950,7 +1903,6 @@ write_function(png_struct* pp, png_bytep data, size_t size)
    SET(level, level);\
    SET(memLevel, mem_level);
 
-#ifdef PNG_WRITE_CUSTOMIZE_COMPRESSION_SUPPORTED
 static void
 search_compression(struct display *dp)
 {
@@ -1988,13 +1940,7 @@ set_ICC_profile_compression(struct display *dp)
 #else
 #  define set_ICC_profile_compression(dp) ((void)0)
 #endif
-#else
-#  define search_compression(dp) ((void)0)
-#  define set_compression(dp) ((void)0)
-#  define set_ICC_profile_compression(dp) ((void)0)
-#endif /* WRITE_CUSTOMIZE_COMPRESSION */
 
-#ifdef PNG_WRITE_CUSTOMIZE_ZTXT_COMPRESSION_SUPPORTED
 static void
 set_text_compression(struct display *dp)
 {
@@ -2005,9 +1951,6 @@ set_text_compression(struct display *dp)
    SET_COMPRESSION
 #  undef SET
 }
-#else
-#  define set_text_compression(dp) ((void)0)
-#endif /* WRITE_CUSTOMIZE_ZTXT_COMPRESSION */
 
 static void
 write_png(struct display *dp, const char *destname)
@@ -2021,9 +1964,7 @@ write_png(struct display *dp, const char *destname)
    if (dp->write_pp == NULL)
       display_log(dp, LIBPNG_ERROR, "failed to create write png_struct");
 
-#  ifdef PNG_BENIGN_ERRORS_SUPPORTED
       png_set_benign_errors(dp->write_pp, 1/*allowed*/);
-#  endif /* BENIGN_ERRORS */
 
    png_set_write_fn(dp->write_pp, dp, write_function, NULL/*flush*/);
 
@@ -2038,15 +1979,10 @@ write_png(struct display *dp, const char *destname)
     */
    text_restore(dp);
 
-#  ifdef PNG_HANDLE_AS_UNKNOWN_SUPPORTED
-      png_set_keep_unknown_chunks(dp->write_pp, PNG_HANDLE_CHUNK_ALWAYS, NULL,
-            0);
-#  endif /* HANDLE_AS_UNKNOWN */
+   png_set_keep_unknown_chunks(dp->write_pp, PNG_HANDLE_CHUNK_ALWAYS, NULL, 0);
 
-#  ifdef PNG_SET_USER_LIMITS_SUPPORTED
-      /* Remove the user limits, if any */
-      png_set_user_limits(dp->write_pp, 0x7fffffff, 0x7fffffff);
-#  endif
+   /* Remove the user limits, if any */
+   png_set_user_limits(dp->write_pp, 0x7fffffff, 0x7fffffff);
 
    /* OPTION HANDLING */
    /* compression outputs, IDAT and zTXt/iTXt: */
@@ -2076,23 +2012,17 @@ write_png(struct display *dp, const char *destname)
    set_ICC_profile_compression(dp);
    set_text_compression(dp);
 
-   {
-      int val;
+   int val;
 
-      /* The permitted range is 1..0x7FFFFFFF, so the cast is safe */
-      if (get_option(dp, "IDAT-size", &val))
-         png_set_IDAT_size(dp->write_pp, val);
-   }
+   /* The permitted range is 1..0x7FFFFFFF, so the cast is safe */
+   if (get_option(dp, "IDAT-size", &val))
+      png_set_IDAT_size(dp->write_pp, val);
+
 
    /* filter handling */
-#  ifdef PNG_WRITE_FILTER_SUPPORTED
-      {
-         int val;
 
-         if (get_option(dp, "filter", &val))
-            png_set_filter(dp->write_pp, PNG_FILTER_TYPE_BASE, val);
-      }
-#  endif /* WRITE_FILTER */
+   if (get_option(dp, "filter", &val))
+     png_set_filter(dp->write_pp, PNG_FILTER_TYPE_BASE, val);
 
    /* This just uses the 'read' info_struct directly, it contains the image. */
    dp->write_size = 0U;
@@ -2126,7 +2056,7 @@ set_windowBits_hi(struct display *dp)
    int wb = MAX_WBITS; /* for large images */
    int i = VLSIZE(windowBits_IDAT);
 
-   while (wb > 8 && dp->size <= 1U<<(wb-1)) --wb;
+   while (wb > 8 && dp->size <= 1ULL<<(wb-1)) --wb;
 
    while (--i >= 0) if (VLNAME(windowBits_IDAT)[i].name == range_hi) break;
 
@@ -2175,6 +2105,7 @@ better_options(const struct display *dp)
    }
 
    assert(0 && "unreached");
+   return 0;
 }
 
 static void

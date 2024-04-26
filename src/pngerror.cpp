@@ -16,28 +16,25 @@
  * at each function.
  */
 
+#include <pngerror.h>
+#include <pngdebug.h>
+
 #include "pngpriv.h"
 
-#if defined(PNG_READ_SUPPORTED) || defined(PNG_WRITE_SUPPORTED)
+static void
+png_default_error (png_const_structrp png_ptr, png_const_charp error_message);
 
-static PNG_FUNCTION(void, png_default_error,PNGARG((png_const_structrp png_ptr,
-    png_const_charp error_message)),PNG_NORETURN);
-
-#ifdef PNG_WARNINGS_SUPPORTED
 static void /* PRIVATE */
-png_default_warning PNGARG((png_const_structrp png_ptr,
-    png_const_charp warning_message));
-#endif /* WARNINGS */
+png_default_warning (png_const_structrp png_ptr,
+    png_const_charp warning_message);
 
 /* This function is called whenever there is a fatal error.  This function
  * should not be changed.  If there is a need to handle errors differently,
  * you should supply a replacement error function and use png_set_error_fn()
  * to replace the error function at run-time.
  */
-#ifdef PNG_ERROR_TEXT_SUPPORTED
-PNG_FUNCTION(void,PNGAPI
-png_error,(png_const_structrp png_ptr, png_const_charp error_message),
-    PNG_NORETURN)
+void PNGAPI
+png_error (png_const_structrp png_ptr, png_const_charp error_message)
 {
 #ifdef PNG_ERROR_NUMBERS_SUPPORTED
    char msg[16];
@@ -80,30 +77,13 @@ png_error,(png_const_structrp png_ptr, png_const_charp error_message),
    }
 #endif
    if (png_ptr != NULL && png_ptr->error_fn != NULL)
-      (*(png_ptr->error_fn))(png_constcast(png_structrp,png_ptr),
+      (*(png_ptr->error_fn))(const_cast<png_struct*>(png_ptr),
           error_message);
 
    /* If the custom handler doesn't exist, or if it returns,
       use the default handler, which will not return. */
    png_default_error(png_ptr, error_message);
 }
-#else
-PNG_FUNCTION(void,PNGAPI
-png_err,(png_const_structrp png_ptr),PNG_NORETURN)
-{
-   /* Prior to 1.5.2 the error_fn received a NULL pointer, expressed
-    * erroneously as '\0', instead of the empty string "".  This was
-    * apparently an error, introduced in libpng-1.2.20, and png_default_error
-    * will crash in this case.
-    */
-   if (png_ptr != NULL && png_ptr->error_fn != NULL)
-      (*(png_ptr->error_fn))(png_constcast(png_structrp,png_ptr), "");
-
-   /* If the custom handler doesn't exist, or if it returns,
-      use the default handler, which will not return. */
-   png_default_error(png_ptr, "");
-}
-#endif /* ERROR_TEXT */
 
 /* Utility to safely appends strings to a buffer.  This never errors out so
  * error checking is not required in the caller.
@@ -124,7 +104,6 @@ png_safecat(png_charp buffer, size_t bufsize, size_t pos,
    return pos;
 }
 
-#if defined(PNG_WARNINGS_SUPPORTED) || defined(PNG_TIME_RFC1123_SUPPORTED)
 /* Utility to dump an unsigned value into a buffer, given a start pointer and
  * and end pointer (which should point just *beyond* the end of the buffer!)
  * Returns the pointer to the start of the formatted string.
@@ -204,9 +183,7 @@ png_format_number(png_const_charp start, png_charp end, int format,
 
    return end;
 }
-#endif
 
-#ifdef PNG_WARNINGS_SUPPORTED
 /* This function is called whenever there is a non-fatal error.  This function
  * should not be changed.  If there is a need to handle warnings differently,
  * you should supply a replacement warning function and use
@@ -232,7 +209,7 @@ png_warning(png_const_structrp png_ptr, png_const_charp warning_message)
       }
    }
    if (png_ptr != NULL && png_ptr->warning_fn != NULL)
-      (*(png_ptr->warning_fn))(png_constcast(png_structrp,png_ptr),
+      (*(png_ptr->warning_fn))(const_cast<png_struct*>(png_ptr),
           warning_message + offset);
    else
       png_default_warning(png_ptr, warning_message + offset);
@@ -355,37 +332,27 @@ png_formatted_warning(png_const_structrp png_ptr, png_warning_parameters p,
     */
    png_warning(png_ptr, msg);
 }
-#endif /* WARNINGS */
 
-#ifdef PNG_BENIGN_ERRORS_SUPPORTED
 void PNGAPI
 png_benign_error(png_const_structrp png_ptr, png_const_charp error_message)
 {
    if ((png_ptr->flags & PNG_FLAG_BENIGN_ERRORS_WARN) != 0)
    {
-#     ifdef PNG_READ_SUPPORTED
-         if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
-            png_ptr->chunk_name != 0)
-            png_chunk_warning(png_ptr, error_message);
-         else
-#     endif
+      if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
+        png_ptr->chunk_name != 0)
+        png_chunk_warning(png_ptr, error_message);
+      else
       png_warning(png_ptr, error_message);
    }
 
    else
    {
-#     ifdef PNG_READ_SUPPORTED
-         if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
-            png_ptr->chunk_name != 0)
-            png_chunk_error(png_ptr, error_message);
-         else
-#     endif
+      if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
+        png_ptr->chunk_name != 0)
+        png_chunk_error(png_ptr, error_message);
+      else
       png_error(png_ptr, error_message);
    }
-
-#  ifndef PNG_ERROR_TEXT_SUPPORTED
-      PNG_UNUSED(error_message)
-#  endif
 }
 
 void /* PRIVATE */
@@ -395,10 +362,6 @@ png_app_warning(png_const_structrp png_ptr, png_const_charp error_message)
       png_warning(png_ptr, error_message);
    else
       png_error(png_ptr, error_message);
-
-#  ifndef PNG_ERROR_TEXT_SUPPORTED
-      PNG_UNUSED(error_message)
-#  endif
 }
 
 void /* PRIVATE */
@@ -408,16 +371,9 @@ png_app_error(png_const_structrp png_ptr, png_const_charp error_message)
       png_warning(png_ptr, error_message);
    else
       png_error(png_ptr, error_message);
-
-#  ifndef PNG_ERROR_TEXT_SUPPORTED
-      PNG_UNUSED(error_message)
-#  endif
 }
-#endif /* BENIGN_ERRORS */
 
 #define PNG_MAX_ERROR_TEXT 196 /* Currently limited by profile_error in png.c */
-#if defined(PNG_WARNINGS_SUPPORTED) || \
-   (defined(PNG_READ_SUPPORTED) && defined(PNG_ERROR_TEXT_SUPPORTED))
 /* These utilities are used internally to build an error message that relates
  * to the current chunk.  The chunk name comes from png_ptr->chunk_name,
  * which is used to prefix the message.  The message is limited in length
@@ -473,12 +429,9 @@ png_format_buffer(png_const_structrp png_ptr, png_charp buffer, png_const_charp
       buffer[iout] = '\0';
    }
 }
-#endif /* WARNINGS || ERROR_TEXT */
 
-#if defined(PNG_READ_SUPPORTED) && defined(PNG_ERROR_TEXT_SUPPORTED)
-PNG_FUNCTION(void,PNGAPI
-png_chunk_error,(png_const_structrp png_ptr, png_const_charp error_message),
-    PNG_NORETURN)
+void PNGAPI
+png_chunk_error (png_const_structrp png_ptr, png_const_charp error_message)
 {
    char msg[18+PNG_MAX_ERROR_TEXT];
    if (png_ptr == NULL)
@@ -490,9 +443,7 @@ png_chunk_error,(png_const_structrp png_ptr, png_const_charp error_message),
       png_error(png_ptr, msg);
    }
 }
-#endif /* READ && ERROR_TEXT */
 
-#ifdef PNG_WARNINGS_SUPPORTED
 void PNGAPI
 png_chunk_warning(png_const_structrp png_ptr, png_const_charp warning_message)
 {
@@ -506,10 +457,7 @@ png_chunk_warning(png_const_structrp png_ptr, png_const_charp warning_message)
       png_warning(png_ptr, msg);
    }
 }
-#endif /* WARNINGS */
 
-#ifdef PNG_READ_SUPPORTED
-#ifdef PNG_BENIGN_ERRORS_SUPPORTED
 void PNGAPI
 png_chunk_benign_error(png_const_structrp png_ptr, png_const_charp
     error_message)
@@ -520,28 +468,15 @@ png_chunk_benign_error(png_const_structrp png_ptr, png_const_charp
    else
       png_chunk_error(png_ptr, error_message);
 
-#  ifndef PNG_ERROR_TEXT_SUPPORTED
-      PNG_UNUSED(error_message)
-#  endif
 }
-#endif
-#endif /* READ */
 
 void /* PRIVATE */
 png_chunk_report(png_const_structrp png_ptr, png_const_charp message, int error)
 {
-#  ifndef PNG_WARNINGS_SUPPORTED
-      PNG_UNUSED(message)
-#  endif
-
    /* This is always supported, but for just read or just write it
     * unconditionally does the right thing.
     */
-#  if defined(PNG_READ_SUPPORTED) && defined(PNG_WRITE_SUPPORTED)
       if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0)
-#  endif
-
-#  ifdef PNG_READ_SUPPORTED
       {
          if (error < PNG_CHUNK_ERROR)
             png_chunk_warning(png_ptr, message);
@@ -549,27 +484,18 @@ png_chunk_report(png_const_structrp png_ptr, png_const_charp message, int error)
          else
             png_chunk_benign_error(png_ptr, message);
       }
-#  endif
-
-#  if defined(PNG_READ_SUPPORTED) && defined(PNG_WRITE_SUPPORTED)
       else if ((png_ptr->mode & PNG_IS_READ_STRUCT) == 0)
-#  endif
 
-#  ifdef PNG_WRITE_SUPPORTED
-      {
-         if (error < PNG_CHUNK_WRITE_ERROR)
-            png_app_warning(png_ptr, message);
+  if (error < PNG_CHUNK_WRITE_ERROR)
+    png_app_warning(png_ptr, message);
 
-         else
-            png_app_error(png_ptr, message);
-      }
-#  endif
+  else
+    png_app_error(png_ptr, message);
 }
 
-#ifdef PNG_ERROR_TEXT_SUPPORTED
 #ifdef PNG_FLOATING_POINT_SUPPORTED
-PNG_FUNCTION(void,
-png_fixed_error,(png_const_structrp png_ptr, png_const_charp name),PNG_NORETURN)
+void PNGAPI
+png_fixed_error (png_const_structrp png_ptr, png_const_charp name)
 {
 #  define fixed_message "fixed point overflow in "
 #  define fixed_message_ln ((sizeof fixed_message)-1)
@@ -586,7 +512,6 @@ png_fixed_error,(png_const_structrp png_ptr, png_const_charp name),PNG_NORETURN)
    msg[fixed_message_ln + iin] = 0;
    png_error(png_ptr, msg);
 }
-#endif
 #endif
 
 #ifdef PNG_SETJMP_SUPPORTED
@@ -619,8 +544,7 @@ png_set_longjmp_fn(png_structrp png_ptr, png_longjmp_ptr longjmp_fn,
 
       else
       {
-         png_ptr->jmp_buf_ptr = png_voidcast(jmp_buf *,
-             png_malloc_warn(png_ptr, jmp_buf_size));
+         png_ptr->jmp_buf_ptr = (jmp_buf *) png_malloc_warn(png_ptr, jmp_buf_size);
 
          if (png_ptr->jmp_buf_ptr == NULL)
             return NULL; /* new NULL return on OOM */
@@ -707,11 +631,9 @@ png_free_jmpbuf(png_structrp png_ptr)
  * function is used by default, or if the program supplies NULL for the
  * error function pointer in png_set_error_fn().
  */
-static PNG_FUNCTION(void /* PRIVATE */,
-png_default_error,(png_const_structrp png_ptr, png_const_charp error_message),
-    PNG_NORETURN)
+static void
+png_default_error (png_const_structrp png_ptr, png_const_charp error_message)
 {
-#ifdef PNG_CONSOLE_IO_SUPPORTED
 #ifdef PNG_ERROR_NUMBERS_SUPPORTED
    /* Check on NULL only added in 1.5.4 */
    if (error_message != NULL && *error_message == PNG_LITERAL_SHARP)
@@ -748,14 +670,11 @@ png_default_error,(png_const_structrp png_ptr, png_const_charp error_message),
          "undefined");
       fprintf(stderr, PNG_STRING_NEWLINE);
    }
-#else
-   PNG_UNUSED(error_message) /* Make compiler happy */
-#endif
    png_longjmp(png_ptr, 1);
 }
 
-PNG_FUNCTION(void,PNGAPI
-png_longjmp,(png_const_structrp png_ptr, int val),PNG_NORETURN)
+void PNGAPI
+png_longjmp (png_const_structrp png_ptr, int val)
 {
 #ifdef PNG_SETJMP_SUPPORTED
    if (png_ptr != NULL && png_ptr->longjmp_fn != NULL &&
@@ -775,7 +694,6 @@ png_longjmp,(png_const_structrp png_ptr, int val),PNG_NORETURN)
    PNG_ABORT();
 }
 
-#ifdef PNG_WARNINGS_SUPPORTED
 /* This function is called when there is a warning, but the library thinks
  * it can continue anyway.  Replacement functions don't have to do anything
  * here if you don't want them to.  In the default configuration, png_ptr is
@@ -784,7 +702,6 @@ png_longjmp,(png_const_structrp png_ptr, int val),PNG_NORETURN)
 static void /* PRIVATE */
 png_default_warning(png_const_structrp png_ptr, png_const_charp warning_message)
 {
-#ifdef PNG_CONSOLE_IO_SUPPORTED
 #  ifdef PNG_ERROR_NUMBERS_SUPPORTED
    if (*warning_message == PNG_LITERAL_SHARP)
    {
@@ -819,12 +736,7 @@ png_default_warning(png_const_structrp png_ptr, png_const_charp warning_message)
       fprintf(stderr, "libpng warning: %s", warning_message);
       fprintf(stderr, PNG_STRING_NEWLINE);
    }
-#else
-   PNG_UNUSED(warning_message) /* Make compiler happy */
-#endif
-   PNG_UNUSED(png_ptr) /* Make compiler happy */
 }
-#endif /* WARNINGS */
 
 /* This function is called when the application wants to use another method
  * of handling errors and warnings.  Note that the error function MUST NOT
@@ -840,11 +752,7 @@ png_set_error_fn(png_structrp png_ptr, png_voidp error_ptr,
 
    png_ptr->error_ptr = error_ptr;
    png_ptr->error_fn = error_fn;
-#ifdef PNG_WARNINGS_SUPPORTED
    png_ptr->warning_fn = warning_fn;
-#else
-   PNG_UNUSED(warning_fn)
-#endif
 }
 
 
@@ -875,18 +783,15 @@ png_set_strip_error_numbers(png_structrp png_ptr, png_uint_32 strip_mode)
 }
 #endif
 
-#if defined(PNG_SIMPLIFIED_READ_SUPPORTED) ||\
-   defined(PNG_SIMPLIFIED_WRITE_SUPPORTED)
    /* Currently the above both depend on SETJMP_SUPPORTED, however it would be
     * possible to implement without setjmp support just so long as there is some
     * way to handle the error return here:
     */
-PNG_FUNCTION(void /* PRIVATE */, (PNGCBAPI
-png_safe_error),(png_struct* png_nonconst_ptr, png_const_charp error_message),
-    PNG_NORETURN)
+void
+png_safe_error (png_struct* png_nonconst_ptr, png_const_charp error_message)
 {
    png_const_structrp png_ptr = png_nonconst_ptr;
-   png_imagep image = png_voidcast(png_imagep, png_ptr->error_ptr);
+   png_imagep image = (png_imagep) png_ptr->error_ptr;
 
    /* An error is always logged here, overwriting anything (typically a warning)
     * that is already there:
@@ -916,12 +821,11 @@ png_safe_error),(png_struct* png_nonconst_ptr, png_const_charp error_message),
    abort();
 }
 
-#ifdef PNG_WARNINGS_SUPPORTED
 void /* PRIVATE */ PNGCBAPI
 png_safe_warning(png_struct* png_nonconst_ptr, png_const_charp warning_message)
 {
    png_const_structrp png_ptr = png_nonconst_ptr;
-   png_imagep image = png_voidcast(png_imagep, png_ptr->error_ptr);
+   png_imagep image = (png_imagep)png_ptr->error_ptr;
 
    /* A warning is only logged if there is no prior warning or error. */
    if (image->warning_or_error == 0)
@@ -930,7 +834,6 @@ png_safe_warning(png_struct* png_nonconst_ptr, png_const_charp warning_message)
       image->warning_or_error |= PNG_IMAGE_WARNING;
    }
 }
-#endif
 
 int /* PRIVATE */
 png_safe_execute(png_imagep image_in, int (*function)(png_voidp), png_voidp arg)
@@ -959,5 +862,3 @@ png_safe_execute(png_imagep image_in, int (*function)(png_voidp), png_voidp arg)
 
    return result;
 }
-#endif /* SIMPLIFIED READ || SIMPLIFIED_WRITE */
-#endif /* READ || WRITE */

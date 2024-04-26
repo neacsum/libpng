@@ -1,19 +1,19 @@
 target_sources(png PRIVATE
-  png.c
-  pngerror.c
-  pngget.c
-  pngmem.c
-  pngpread.c
-  pngread.c
-  pngrio.c
-  pngrtran.c
-  pngrutil.c
-  pngset.c
-  pngtrans.c
-  pngwio.c
-  pngwrite.c
-  pngwtran.c
-  pngwutil.c
+  png.cpp
+  pngerror.cpp
+  pngget.cpp
+  pngmem.cpp
+  pngpread.cpp
+  pngread.cpp
+  pngrio.cpp
+  pngrtran.cpp
+  pngrutil.cpp
+  pngset.cpp
+  pngtrans.cpp
+  pngwio.cpp
+  pngwrite.cpp
+  pngwtran.cpp
+  pngwutil.cpp
 )
 add_subdirectory(arm)
 add_subdirectory(powerpc)

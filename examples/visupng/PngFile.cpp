@@ -29,9 +29,7 @@ static png_infop info_ptr = NULL;
 
 static void png_cexcept_error (png_struct* png_ptr, png_const_charp msg)
 {
-#ifdef PNG_CONSOLE_IO_SUPPORTED
   fprintf (stderr, "libpng error: %s\n", msg);
-#endif
   throw msg;
 }
 
@@ -144,12 +142,7 @@ BOOL PngLoadImage (char* pstrFileName, png_byte** ppbImageData, png_uint_32* piW
   {
     /* initialize the png structure */
 
-#ifdef PNG_STDIO_SUPPORTED
     png_init_io (png_ptr, pfFile);
-#else
-    png_set_read_fn (png_ptr, (png_voidp)pfFile, png_read_data);
-#endif
-
     png_set_sig_bytes (png_ptr, 8);
 
     /* read all PNG info up to image data */
@@ -163,11 +156,7 @@ BOOL PngLoadImage (char* pstrFileName, png_byte** ppbImageData, png_uint_32* piW
 
 #ifdef PNG_READ_16_TO_8_SUPPORTED
     if (iBitDepth == 16)
-#ifdef PNG_READ_SCALE_16_TO_8_SUPPORTED
       png_set_scale_16 (png_ptr);
-#else
-      png_set_strip_16 (png_ptr);
-#endif
 #endif
     if (iColorType == PNG_COLOR_TYPE_PALETTE)
       png_set_expand (png_ptr);
@@ -315,11 +304,7 @@ BOOL PngSaveImage (char* pstrFileName, png_byte* pDiData, int iWidth, int iHeigh
   {
     /* initialize the png structure */
 
-#ifdef PNG_STDIO_SUPPORTED
     png_init_io (png_ptr, pfFile);
-#else
-    png_set_write_fn (png_ptr, (png_voidp)pfFile, png_write_data, png_flush);
-#endif
 
     /* we're going to write a very simple 3x8-bit RGB image */
 
@@ -384,44 +369,6 @@ BOOL PngSaveImage (char* pstrFileName, png_byte* pDiData, int iWidth, int iHeigh
 
   return TRUE;
 }
-
-#ifndef PNG_STDIO_SUPPORTED
-
-static void png_read_data (png_struct* png_ptr, png_bytep data, size_t length)
-{
-  size_t check;
-
-  /* fread() returns 0 on error, so it is OK to store this in a size_t
-   * instead of an int, which is what fread() actually returns.
-   */
-  check = fread (data, 1, length, (FILE*)png_ptr->io_ptr);
-
-  if (check != length)
-  {
-    png_error (png_ptr, "Read Error");
-  }
-}
-
-static void png_write_data (png_struct* png_ptr, png_bytep data, size_t length)
-{
-  png_uint_32 check;
-
-  check = fwrite (data, 1, length, (FILE*)(png_ptr->io_ptr));
-  if (check != length)
-  {
-    png_error (png_ptr, "Write Error");
-  }
-}
-
-static void png_flush (png_struct* png_ptr)
-{
-  FILE* io_ptr;
-  io_ptr = (FILE*)CVT_PTR ((png_ptr->io_ptr));
-  if (io_ptr != NULL)
-    fflush (io_ptr);
-}
-
-#endif
 
 /*-----------------
  *  end of source

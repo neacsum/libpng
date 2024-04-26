@@ -5,7 +5,7 @@ project(png
   LANGUAGES C CXX)
 
 #CMake debugging stuff
-set (VARLIST true)
+set (VARLIST false)
 set (CMAKE_VERBOSE_MAKEFILE true)
 
 set(PNGLIB_MAJOR 1)
@@ -174,7 +174,6 @@ if (PNG_TOOLS)
 endif()
 
 if (PNG_TESTS)
-
   # Build executables used for testing
   include_directories(png PRIVATE include)
   link_directories(${CMAKE_SOURCE_DIR}/lib/${CMAKE_C_COMPILER_ARCHITECTURE_ID})
@@ -188,7 +187,13 @@ if (PNG_TESTS)
 
   set_property(TARGET pngvalid pngtest
     PROPERTY RUNTIME_OUTPUT_DIRECTORY
-      ${CMAKE_SOURCE_DIR}/bin/${CMAKE_C_COMPILER_ARCHITECTURE_ID})  
+      ${CMAKE_SOURCE_DIR}/bin/${CMAKE_C_COMPILER_ARCHITECTURE_ID})
+  cmake_path(CONVERT "tests/pngtest-all" TO_NATIVE_PATH_LIST tst)
+  add_custom_command(
+    TARGET pngtest POST_BUILD
+    COMMAND cd ${CMAKE_SOURCE_DIR} && ${tst}
+    ARGS $<TARGET_PROPERTY:RUNTIME_OUTPUT_DIRECTORY>$<$<CXX_COMPILER_ID:MSVC>:/$<CONFIG>> 
+  )
 
 endif()
 

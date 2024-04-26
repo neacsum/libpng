@@ -43,21 +43,11 @@
 #endif
 
 
-/* Since this program tests the ability to change the unknown chunk handling
- * these must be defined:
- */
-#if defined(PNG_SET_UNKNOWN_CHUNKS_SUPPORTED) &&\
-   defined(PNG_STDIO_SUPPORTED) &&\
-   defined(PNG_READ_SUPPORTED)
-
 /* One of these must be defined to allow us to find out what happened.  It is
  * still useful to set unknown chunk handling without either of these in order
  * to cause *known* chunks to be discarded.  This can be a significant
  * efficiency gain, but it can't really be tested here.
  */
-#if defined(PNG_READ_USER_CHUNKS_SUPPORTED) ||\
-   defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
-
 #if PNG_LIBPNG_VER < 10500
 /* This deliberately lacks the const. */
 typedef png_byte *png_const_bytep;
@@ -148,14 +138,6 @@ typedef png_byte *png_const_bytep;
 
 #endif /* PNG_LIBPNG_VER < 10700 */
 
-#ifdef __cplusplus
-#  define this not_the_cpp_this
-#  define new not_the_cpp_new
-#  define voidcast(type, value) static_cast<type>(value)
-#else
-#  define voidcast(type, value) (value)
-#endif /* __cplusplus */
-
 /* Unused formal parameter errors are removed using the following macro which is
  * expected to have no bad effects on performance.
  */
@@ -197,135 +179,24 @@ static struct
    { "PLTE", PNG_INFO_PLTE, png_PLTE, 0, 0, ABSENT, 0 },
 
    /* Non-critical chunks that libpng handles */
-   /* This is a mess but it seems to be the only way to do it - there is no way
-    * to check for a definition outside a #if.
-    */
-   { "bKGD", PNG_INFO_bKGD, png_bKGD,
-#     ifdef PNG_READ_bKGD_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "cHRM", PNG_INFO_cHRM, png_cHRM,
-#     ifdef PNG_READ_cHRM_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "eXIf", PNG_INFO_eXIf, png_eXIf,
-#     ifdef PNG_READ_eXIf_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  END, 0 },
-   { "gAMA", PNG_INFO_gAMA, png_gAMA,
-#     ifdef PNG_READ_gAMA_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "hIST", PNG_INFO_hIST, png_hIST,
-#     ifdef PNG_READ_hIST_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1, ABSENT, 0 },
-   { "iCCP", PNG_INFO_iCCP, png_iCCP,
-#     ifdef PNG_READ_iCCP_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1, ABSENT, 0 },
-   { "iTXt", PNG_INFO_iTXt, png_iTXt,
-#     ifdef PNG_READ_iTXt_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1, ABSENT, 0 },
-   { "oFFs", PNG_INFO_oFFs, png_oFFs,
-#     ifdef PNG_READ_oFFs_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "pCAL", PNG_INFO_pCAL, png_pCAL,
-#     ifdef PNG_READ_pCAL_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "pHYs", PNG_INFO_pHYs, png_pHYs,
-#     ifdef PNG_READ_pHYs_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "sBIT", PNG_INFO_sBIT, png_sBIT,
-#     ifdef PNG_READ_sBIT_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "sCAL", PNG_INFO_sCAL, png_sCAL,
-#     ifdef PNG_READ_sCAL_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "sPLT", PNG_INFO_sPLT, png_sPLT,
-#     ifdef PNG_READ_sPLT_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1, ABSENT, 0 },
-   { "sRGB", PNG_INFO_sRGB, png_sRGB,
-#     ifdef PNG_READ_sRGB_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "tEXt", PNG_INFO_tEXt, png_tEXt,
-#     ifdef PNG_READ_tEXt_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "tIME", PNG_INFO_tIME, png_tIME,
-#     ifdef PNG_READ_tIME_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,  START, 0 },
-   { "tRNS", PNG_INFO_tRNS, png_tRNS,
-#     ifdef PNG_READ_tRNS_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      0, ABSENT, 0 },
-   { "zTXt", PNG_INFO_zTXt, png_zTXt,
-#     ifdef PNG_READ_zTXt_SUPPORTED
-         0,
-#     else
-         1,
-#     endif
-      1,    END, 0 },
+   { "bKGD", PNG_INFO_bKGD, png_bKGD, 0, 1,  START, 0 },
+   { "cHRM", PNG_INFO_cHRM, png_cHRM, 0, 1,  START, 0 },
+   { "eXIf", PNG_INFO_eXIf, png_eXIf, 0, 1,  END, 0 },
+   { "gAMA", PNG_INFO_gAMA, png_gAMA, 0, 1,  START, 0 },
+   { "hIST", PNG_INFO_hIST, png_hIST, 0, 1, ABSENT, 0 },
+   { "iCCP", PNG_INFO_iCCP, png_iCCP, 0, 1, ABSENT, 0 },
+   { "iTXt", PNG_INFO_iTXt, png_iTXt, 0, 1, ABSENT, 0 },
+   { "oFFs", PNG_INFO_oFFs, png_oFFs, 0, 1,  START, 0 },
+   { "pCAL", PNG_INFO_pCAL, png_pCAL, 0, 1,  START, 0 },
+   { "pHYs", PNG_INFO_pHYs, png_pHYs, 0, 1,  START, 0 },
+   { "sBIT", PNG_INFO_sBIT, png_sBIT, 0, 1,  START, 0 },
+   { "sCAL", PNG_INFO_sCAL, png_sCAL, 0, 1,  START, 0 },
+   { "sPLT", PNG_INFO_sPLT, png_sPLT, 0, 1, ABSENT, 0 },
+   { "sRGB", PNG_INFO_sRGB, png_sRGB, 0, 1,  START, 0 },
+   { "tEXt", PNG_INFO_tEXt, png_tEXt, 0, 1,  START, 0 },
+   { "tIME", PNG_INFO_tIME, png_tIME, 0, 1,  START, 0 },
+   { "tRNS", PNG_INFO_tRNS, png_tRNS, 0, 0, ABSENT, 0 },
+   { "zTXt", PNG_INFO_zTXt, png_zTXt, 0, 1,  END, 0 },
 
    /* No libpng handling */
    { "sTER", PNG_INFO_sTER, png_sTER, 1, 1,  START, 0 },
@@ -387,13 +258,11 @@ ancillary(const char *name)
    return PNG_CHUNK_ANCILLARY(PNG_U32(name[0], name[1], name[2], name[3]));
 }
 
-#ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
 static int
 ancillaryb(const png_byte *name)
 {
    return PNG_CHUNK_ANCILLARY(PNG_U32(name[0], name[1], name[2], name[3]));
 }
-#endif
 
 /* Type of an error_ptr */
 typedef struct
@@ -513,14 +382,13 @@ get_valid(display *d, png_infop info_ptr)
    return flags;
 }
 
-#ifdef PNG_READ_USER_CHUNKS_SUPPORTED
 static int PNGCBAPI
 read_callback(png_struct* pp, png_unknown_chunkp pc)
 {
    /* This function mimics the behavior of png_set_keep_unknown_chunks by
     * returning '0' to keep the chunk and '1' to discard it.
     */
-   display *d = voidcast(display*, png_get_user_chunk_ptr(pp));
+   display *d = (display*) png_get_user_chunk_ptr(pp);
    int chunk = findb(pc->name);
    int keep, discard;
 
@@ -581,15 +449,9 @@ read_callback(png_struct* pp, png_unknown_chunkp pc)
    /* However if there is no support to store unknown chunks don't ask libpng to
     * do it; there will be an png_error.
     */
-#  ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
-      return discard;
-#  else
-      return 1; /*handled; discard*/
-#  endif
+    return discard;
 }
-#endif /* READ_USER_CHUNKS_SUPPORTED */
 
-#ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
 static png_uint_32
 get_unknown(display *d, png_infop info_ptr, int after_IDAT)
 {
@@ -642,27 +504,6 @@ get_unknown(display *d, png_infop info_ptr, int after_IDAT)
 
    return flags;
 }
-#else /* SAVE_UNKNOWN_CHUNKS */
-static png_uint_32
-get_unknown(display *d, png_infop info_ptr, int after_IDAT)
-   /* Otherwise this will return the cached values set by any user callback */
-{
-   UNUSED(info_ptr);
-
-   if (after_IDAT)
-      return d->after_IDAT;
-
-   else
-      return d->before_IDAT;
-}
-
-#  ifndef PNG_READ_USER_CHUNKS_SUPPORTED
-      /* The #defines above should mean this is never reached, it's just here as
-       * a check to ensure the logic is correct.
-       */
-#     error No store support and no user chunk support, this will not work
-#  endif /* READ_USER_CHUNKS */
-#endif /* SAVE_UNKNOWN_CHUNKS */
 
 static int
 check(FILE *fp, int argc, const char **argv, png_uint_32p flags/*out*/,
@@ -700,15 +541,11 @@ check(FILE *fp, int argc, const char **argv, png_uint_32p flags/*out*/,
 
    png_init_io(d->png_ptr, fp);
 
-#  ifdef PNG_READ_USER_CHUNKS_SUPPORTED
-      /* This is only done if requested by the caller; it interferes with the
-       * standard store/save mechanism.
-       */
-      if (set_callback)
-         png_set_read_user_chunk_fn(d->png_ptr, d, read_callback);
-#  else
-      UNUSED(set_callback)
-#  endif
+    /* This is only done if requested by the caller; it interferes with the
+      * standard store/save mechanism.
+      */
+    if (set_callback)
+        png_set_read_user_chunk_fn(d->png_ptr, d, read_callback);
 
    /* Handle each argument in turn; multiple settings are possible for the same
     * chunk and multiple calls will occur (the last one should override all
@@ -749,17 +586,11 @@ check(FILE *fp, int argc, const char **argv, png_uint_32p flags/*out*/,
                    * in this case, so we just check the arguments!  This could
                    * be improved in the future by using the read callback.
                    */
-#                 if PNG_LIBPNG_VER >= 10700 &&\
-                     !defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
-                     if (option < PNG_HANDLE_CHUNK_IF_SAFE)
-#                 endif /* 1.7+ SAVE_UNKNOWN_CHUNKS */
-                  {
-                     png_byte name[5];
+                   png_byte name[5];
 
-                     memcpy(name, chunk_info[chunk].name, 5);
-                     png_set_keep_unknown_chunks(d->png_ptr, option, name, 1);
-                     chunk_info[chunk].keep = option;
-                  }
+                   memcpy(name, chunk_info[chunk].name, 5);
+                   png_set_keep_unknown_chunks(d->png_ptr, option, name, 1);
+                   chunk_info[chunk].keep = option;
                   continue;
                }
 
@@ -768,11 +599,7 @@ check(FILE *fp, int argc, const char **argv, png_uint_32p flags/*out*/,
             case 7: /* default */
                if (memcmp(argv[i], "default", 7) == 0)
                {
-#                 if PNG_LIBPNG_VER >= 10700 &&\
-                     !defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
-                     if (option < PNG_HANDLE_CHUNK_IF_SAFE)
-#                 endif /* 1.7+ SAVE_UNKNOWN_CHUNKS */
-                     png_set_keep_unknown_chunks(d->png_ptr, option, NULL, 0);
+                  png_set_keep_unknown_chunks(d->png_ptr, option, NULL, 0);
 
                   d->keep = option;
                   continue;
@@ -783,11 +610,7 @@ check(FILE *fp, int argc, const char **argv, png_uint_32p flags/*out*/,
             case 3: /* all */
                if (memcmp(argv[i], "all", 3) == 0)
                {
-#                 if PNG_LIBPNG_VER >= 10700 &&\
-                     !defined(PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED)
-                     if (option < PNG_HANDLE_CHUNK_IF_SAFE)
-#                 endif /* 1.7+ SAVE_UNKNOWN_CHUNKS */
-                     png_set_keep_unknown_chunks(d->png_ptr, option, NULL, -1);
+                  png_set_keep_unknown_chunks(d->png_ptr, option, NULL, -1);
 
                   d->keep = option;
 
@@ -1088,12 +911,8 @@ perform_one_test_safe(FILE *fp, int argc, const char **argv,
    if (setjmp(d->error_return) == 0)
    {
       d->test = test; /* allow use of d->error_return */
-#     ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
          perform_one_test(fp, argc, argv, default_flags, d, 0);
-#     endif
-#     ifdef PNG_READ_USER_CHUNKS_SUPPORTED
          perform_one_test(fp, argc, argv, default_flags, d, 1);
-#     endif
       d->test = init; /* prevent use of d->error_return */
    }
 }
@@ -1185,13 +1004,7 @@ main(int argc, const char **argv)
     * instantiated by default.  If 'save' is *not* supported then a user
     * callback is required even though we can call png_get_unknown_chunks.
     */
-   if (check(fp, 1, &count_argv, default_flags, &d,
-#     ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
-         0
-#     else
-         1
-#     endif
-      ) != PNG_HANDLE_CHUNK_ALWAYS)
+   if (check(fp, 1, &count_argv, default_flags, &d, 0) != PNG_HANDLE_CHUNK_ALWAYS)
    {
       fprintf(stderr, "%s: %s: internal error\n", d.program, d.file);
       exit(99);
@@ -1201,12 +1014,8 @@ main(int argc, const char **argv)
    if (!default_tests)
    {
       d.test = cmd; /* acts as a flag to say exit, do not longjmp */
-#     ifdef PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
-         perform_one_test(fp, argc, argv, default_flags, &d, 0);
-#     endif
-#     ifdef PNG_READ_USER_CHUNKS_SUPPORTED
+      perform_one_test(fp, argc, argv, default_flags, &d, 0);
          perform_one_test(fp, argc, argv, default_flags, &d, 1);
-#     endif
       d.test = init;
    }
 
@@ -1285,24 +1094,3 @@ main(int argc, const char **argv)
    return 1;
 }
 
-#else /* !(READ_USER_CHUNKS || SAVE_UNKNOWN_CHUNKS) */
-int
-main(void)
-{
-   fprintf(stderr,
-      " test ignored: no support to find out about unknown chunks\n");
-   /* So the test is skipped: */
-   return SKIP;
-}
-#endif /* READ_USER_CHUNKS || SAVE_UNKNOWN_CHUNKS */
-
-#else /* !(SET_UNKNOWN_CHUNKS && READ) */
-int
-main(void)
-{
-   fprintf(stderr,
-      " test ignored: no support to modify unknown chunk handling\n");
-   /* So the test is skipped: */
-   return SKIP;
-}
-#endif /* SET_UNKNOWN_CHUNKS && READ*/

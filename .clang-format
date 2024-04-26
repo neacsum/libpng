@@ -15,5 +15,5 @@ BraceWrapping:
 AlignConsecutiveMacros:
   Enabled: true
 AlwaysBreakTemplateDeclarations: Yes
-# AlwaysBreakAfterReturnType: TopLevel
+AlwaysBreakAfterReturnType: TopLevel
 

@@ -23,6 +23,10 @@
 
 #ifndef PNG_BUILDING_SYMBOL_TABLE /* else includes may cause problems */
 
+#if __has_include("libconf.h")
+#include "libconf.h"
+#endif
+
 /* From libpng 1.6.0 libpng requires an ANSI X3.159-1989 ("ISOC90") compliant C
  * compiler for correct compilation.  The following header files are required by
  * the standard.  If your compiler doesn't provide these header files, or they
@@ -41,20 +45,16 @@
  * include this unnecessary header file.
  */
 
-#ifdef PNG_STDIO_SUPPORTED
-   /* Required for the definition of FILE: */
-#  include <stdio.h>
-#endif
+/* Required for the definition of FILE: */
+#include <stdio.h>
 
 #ifdef PNG_SETJMP_SUPPORTED
    /* Required for the definition of jmp_buf and the declaration of longjmp: */
 #  include <setjmp.h>
 #endif
 
-#ifdef PNG_CONVERT_tIME_SUPPORTED
-   /* Required for struct tm: */
-#  include <time.h>
-#endif
+/* Required for struct tm: */
+#include <time.h>
 
 #endif /* PNG_BUILDING_SYMBOL_TABLE */
 
@@ -66,12 +66,8 @@
 /* This controls optimization of the reading of 16-bit and 32-bit
  * values from PNG files.  It can be set on a per-app-file basis: it
  * just changes whether a macro is used when the function is called.
- * The library builder sets the default; if read functions are not
- * built into the library the macro implementation is forced on.
+ * The library builder sets the default.
  */
-#ifndef PNG_READ_INT_FUNCTIONS_SUPPORTED
-#  define PNG_USE_READ_MACROS
-#endif
 #if !defined(PNG_NO_USE_READ_MACROS) && !defined(PNG_USE_READ_MACROS)
 #  if PNG_DEFAULT_READ_MACROS
 #    define PNG_USE_READ_MACROS
@@ -85,14 +81,6 @@
  * below) but still have compiler specific implementations, others
  * may be changed on a per-file basis when compiling against libpng.
  */
-
-/* The PNGARG macro was used in versions of libpng prior to 1.6.0 to protect
- * against legacy (pre ISOC90) compilers that did not understand function
- * prototypes.  It is not required for modern C compilers.
- */
-#ifndef PNGARG
-#  define PNGARG(arglist) arglist
-#endif
 
 /* Function calling conventions.
  * =============================
@@ -298,7 +286,7 @@
 
 #ifndef PNG_EXPORTA
 #  define PNG_EXPORTA(ordinal, type, name, args, attributes) \
-      PNG_FUNCTION(PNG_EXPORT_TYPE(type), (PNGAPI name), PNGARG(args), \
+      PNG_FUNCTION(PNG_EXPORT_TYPE(type), (PNGAPI name), args, \
       PNG_LINKAGE_API attributes)
 #endif
 
@@ -316,7 +304,7 @@
 #endif
 
 #ifndef PNG_CALLBACK
-#  define PNG_CALLBACK(type, name, args) type (PNGCBAPI name) PNGARG(args)
+#  define PNG_CALLBACK(type, name, args) type (PNGCBAPI name) args
 #endif
 
 /* Support for compiler specific function attributes.  These are used
@@ -395,7 +383,7 @@
 #      endif /* __GNUC__.__GNUC_MINOR__ > 3.0 */
 #    endif /* __GNUC__ >= 3 */
 
-#  elif defined(_MSC_VER)  && (_MSC_VER >= 1300)
+#  elif defined(_MSC_VER)  && (_MSC_VER >= 1300) && __cplusplus__
 #    ifndef PNG_USE_RESULT
 #      define PNG_USE_RESULT /* not supported */
 #    endif
@@ -445,22 +433,6 @@
 #  define PNG_RESTRICT    /* The C99 "restrict" feature */
 #endif
 
-#ifndef PNG_FP_EXPORT     /* A floating point API. */
-#  ifdef PNG_FLOATING_POINT_SUPPORTED
-#     define PNG_FP_EXPORT(ordinal, type, name, args)\
-         PNG_EXPORT(ordinal, type, name, args);
-#  else                   /* No floating point APIs */
-#     define PNG_FP_EXPORT(ordinal, type, name, args)
-#  endif
-#endif
-#ifndef PNG_FIXED_EXPORT  /* A fixed point API. */
-#  ifdef PNG_FIXED_POINT_SUPPORTED
-#     define PNG_FIXED_EXPORT(ordinal, type, name, args)\
-         PNG_EXPORT(ordinal, type, name, args);
-#  else                   /* No fixed point APIs */
-#     define PNG_FIXED_EXPORT(ordinal, type, name, args)
-#  endif
-#endif
 
 #ifndef PNG_BUILDING_SYMBOL_TABLE
 /* Some typedefs to get us started.  These should be safe on most of the common
@@ -539,10 +511,6 @@ typedef png_fixed_point       * png_fixed_point_p;
 typedef const png_fixed_point * png_const_fixed_point_p;
 typedef size_t                * png_size_tp;
 typedef const size_t          * png_const_size_tp;
-
-#ifdef PNG_STDIO_SUPPORTED
-typedef FILE            * png_FILE_p;
-#endif
 
 #ifdef PNG_FLOATING_POINT_SUPPORTED
 typedef double       * png_doublep;

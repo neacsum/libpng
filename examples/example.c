@@ -755,7 +755,7 @@ void write_png(char *file_name /* , ... other image information ... */)
     * in case we are using dynamically linked libraries.  REQUIRED.
     */
    png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
-       png_voidp user_error_ptr, user_error_fn, user_warning_fn);
+       user_error_ptr, user_error_fn, user_warning_fn);
    if (png_ptr == NULL)
    {
       fclose(fp);

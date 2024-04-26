@@ -22,9 +22,4 @@ BOOL PngLoadImage (char* pstrFileName, png_byte** ppbImageData, png_uint_32* piW
 BOOL PngSaveImage (char* pstrFileName, png_byte *pDiData,
                    int iWidth, int iHeight, png_color BkgColor);
 
-#ifndef PNG_STDIO_SUPPORTED
-static void png_read_data(png_struct* png_ptr, png_bytep data, size_t length);
-static void png_write_data(png_struct* png_ptr, png_bytep data, size_t length);
-static void png_flush(png_struct* png_ptr);
-#endif
 

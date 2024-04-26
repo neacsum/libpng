@@ -13,7 +13,6 @@
 
 #include <pngpriv.h>
 
-#ifdef PNG_READ_SUPPORTED
 #if PNG_INTEL_SSE_IMPLEMENTATION > 0
 
 void
@@ -49,4 +48,3 @@ png_init_filter_functions_sse2(png_struct* pp, unsigned int bpp)
 }
 
 #endif /* PNG_INTEL_SSE_IMPLEMENTATION > 0 */
-#endif /* PNG_READ_SUPPORTED */

@@ -12,13 +12,12 @@
  *
  */
 
+#include <pngdebug.h>
+
 #include "pngpriv.h"
 
-#if defined(PNG_READ_SUPPORTED) || defined(PNG_WRITE_SUPPORTED)
-
 png_uint_32 PNGAPI
-png_get_valid(png_const_structrp png_ptr, png_const_inforp info_ptr,
-    png_uint_32 flag)
+png_get_valid (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 flag)
 {
    if (png_ptr != NULL && info_ptr != NULL)
       return(info_ptr->valid & flag);
@@ -35,7 +34,6 @@ png_get_rowbytes(png_const_structrp png_ptr, png_const_inforp info_ptr)
    return(0);
 }
 
-#ifdef PNG_INFO_IMAGE_SUPPORTED
 png_bytepp PNGAPI
 png_get_rows(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
@@ -44,10 +42,8 @@ png_get_rows(png_const_structrp png_ptr, png_const_inforp info_ptr)
 
    return(0);
 }
-#endif
 
-#ifdef PNG_EASY_ACCESS_SUPPORTED
-/* Easy access to info, added in libpng-0.99 */
+/* Easy access to info */
 png_uint_32 PNGAPI
 png_get_image_width(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
@@ -115,7 +111,6 @@ png_uint_32 PNGAPI
 png_get_x_pixels_per_meter(png_const_structrp png_ptr, png_const_inforp
    info_ptr)
 {
-#ifdef PNG_pHYs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_pHYs) != 0)
       {
@@ -125,11 +120,6 @@ png_get_x_pixels_per_meter(png_const_structrp png_ptr, png_const_inforp
          if (info_ptr->phys_unit_type == PNG_RESOLUTION_METER)
             return (info_ptr->x_pixels_per_unit);
       }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
@@ -137,7 +127,6 @@ png_uint_32 PNGAPI
 png_get_y_pixels_per_meter(png_const_structrp png_ptr, png_const_inforp
     info_ptr)
 {
-#ifdef PNG_pHYs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_pHYs) != 0)
    {
@@ -147,18 +136,12 @@ png_get_y_pixels_per_meter(png_const_structrp png_ptr, png_const_inforp
       if (info_ptr->phys_unit_type == PNG_RESOLUTION_METER)
          return (info_ptr->y_pixels_per_unit);
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
 png_uint_32 PNGAPI
 png_get_pixels_per_meter(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
-#ifdef PNG_pHYs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_pHYs) != 0)
    {
@@ -168,11 +151,6 @@ png_get_pixels_per_meter(png_const_structrp png_ptr, png_const_inforp info_ptr)
           info_ptr->x_pixels_per_unit == info_ptr->y_pixels_per_unit)
          return (info_ptr->x_pixels_per_unit);
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
@@ -181,7 +159,6 @@ float PNGAPI
 png_get_pixel_aspect_ratio(png_const_structrp png_ptr, png_const_inforp
    info_ptr)
 {
-#ifdef PNG_READ_pHYs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_pHYs) != 0)
    {
@@ -191,10 +168,6 @@ png_get_pixel_aspect_ratio(png_const_structrp png_ptr, png_const_inforp
          return ((float)((float)info_ptr->y_pixels_per_unit
              /(float)info_ptr->x_pixels_per_unit));
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
 
    return ((float)0.0);
 }
@@ -205,7 +178,6 @@ png_fixed_point PNGAPI
 png_get_pixel_aspect_ratio_fixed(png_const_structrp png_ptr,
     png_const_inforp info_ptr)
 {
-#ifdef PNG_READ_pHYs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_pHYs) != 0 &&
        info_ptr->x_pixels_per_unit > 0 && info_ptr->y_pixels_per_unit > 0 &&
@@ -223,10 +195,6 @@ png_get_pixel_aspect_ratio_fixed(png_const_structrp png_ptr,
           (png_int_32)info_ptr->x_pixels_per_unit) != 0)
          return res;
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
 
    return 0;
 }
@@ -235,7 +203,6 @@ png_get_pixel_aspect_ratio_fixed(png_const_structrp png_ptr,
 png_int_32 PNGAPI
 png_get_x_offset_microns(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
-#ifdef PNG_oFFs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_oFFs) != 0)
    {
@@ -244,18 +211,12 @@ png_get_x_offset_microns(png_const_structrp png_ptr, png_const_inforp info_ptr)
       if (info_ptr->offset_unit_type == PNG_OFFSET_MICROMETER)
          return (info_ptr->x_offset);
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
 png_int_32 PNGAPI
 png_get_y_offset_microns(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
-#ifdef PNG_oFFs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_oFFs) != 0)
    {
@@ -264,18 +225,12 @@ png_get_y_offset_microns(png_const_structrp png_ptr, png_const_inforp info_ptr)
       if (info_ptr->offset_unit_type == PNG_OFFSET_MICROMETER)
          return (info_ptr->y_offset);
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
 png_int_32 PNGAPI
 png_get_x_offset_pixels(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
-#ifdef PNG_oFFs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_oFFs) != 0)
    {
@@ -284,18 +239,12 @@ png_get_x_offset_pixels(png_const_structrp png_ptr, png_const_inforp info_ptr)
       if (info_ptr->offset_unit_type == PNG_OFFSET_PIXEL)
          return (info_ptr->x_offset);
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
 png_int_32 PNGAPI
 png_get_y_offset_pixels(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
-#ifdef PNG_oFFs_SUPPORTED
    if (png_ptr != NULL && info_ptr != NULL &&
        (info_ptr->valid & PNG_INFO_oFFs) != 0)
    {
@@ -304,15 +253,9 @@ png_get_y_offset_pixels(png_const_structrp png_ptr, png_const_inforp info_ptr)
       if (info_ptr->offset_unit_type == PNG_OFFSET_PIXEL)
          return (info_ptr->y_offset);
    }
-#else
-   PNG_UNUSED(png_ptr)
-   PNG_UNUSED(info_ptr)
-#endif
-
    return (0);
 }
 
-#ifdef PNG_INCH_CONVERSIONS_SUPPORTED
 static png_uint_32
 ppi_from_ppm(png_uint_32 ppm)
 {
@@ -416,7 +359,6 @@ png_get_y_offset_inches(png_const_structrp png_ptr, png_const_inforp info_ptr)
 }
 #endif
 
-#ifdef PNG_pHYs_SUPPORTED
 png_uint_32 PNGAPI
 png_get_pHYs_dpi(png_const_structrp png_ptr, png_const_inforp info_ptr,
     png_uint_32 *res_x, png_uint_32 *res_y, int *unit_type)
@@ -455,13 +397,6 @@ png_get_pHYs_dpi(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (retval);
 }
-#endif /* pHYs */
-#endif /* INCH_CONVERSIONS */
-
-/* png_get_channels really belongs in here, too, but it's been around longer */
-
-#endif /* EASY_ACCESS */
-
 
 png_byte PNGAPI
 png_get_channels(png_const_structrp png_ptr, png_const_inforp info_ptr)
@@ -472,7 +407,6 @@ png_get_channels(png_const_structrp png_ptr, png_const_inforp info_ptr)
    return (0);
 }
 
-#ifdef PNG_READ_SUPPORTED
 png_const_bytep PNGAPI
 png_get_signature(png_const_structrp png_ptr, png_const_inforp info_ptr)
 {
@@ -481,9 +415,7 @@ png_get_signature(png_const_structrp png_ptr, png_const_inforp info_ptr)
 
    return (NULL);
 }
-#endif
 
-#ifdef PNG_bKGD_SUPPORTED
 png_uint_32 PNGAPI
 png_get_bKGD(png_const_structrp png_ptr, png_inforp info_ptr,
     png_color_16p *background)
@@ -500,9 +432,7 @@ png_get_bKGD(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_cHRM_SUPPORTED
 /* The XYZ APIs were added in 1.5.5 to take advantage of the code added at the
  * same time to correct the rgb grayscale coefficient defaults obtained from the
  * cHRM chunk in 1.5.4
@@ -597,7 +527,6 @@ png_get_cHRM_XYZ(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (0);
 }
-#  endif
 
 #  ifdef PNG_FIXED_POINT_SUPPORTED
 png_uint_32 PNGAPI
@@ -672,8 +601,7 @@ png_get_cHRM_fixed(png_const_structrp png_ptr, png_const_inforp info_ptr,
 #  endif
 #endif
 
-#ifdef PNG_gAMA_SUPPORTED
-#  ifdef PNG_FIXED_POINT_SUPPORTED
+#ifdef PNG_FIXED_POINT_SUPPORTED
 png_uint_32 PNGAPI
 png_get_gAMA_fixed(png_const_structrp png_ptr, png_const_inforp info_ptr,
     png_fixed_point *file_gamma)
@@ -690,9 +618,9 @@ png_get_gAMA_fixed(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (0);
 }
-#  endif
+#endif
 
-#  ifdef PNG_FLOATING_POINT_SUPPORTED
+#ifdef PNG_FLOATING_POINT_SUPPORTED
 png_uint_32 PNGAPI
 png_get_gAMA(png_const_structrp png_ptr, png_const_inforp info_ptr,
     double *file_gamma)
@@ -710,10 +638,8 @@ png_get_gAMA(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (0);
 }
-#  endif
 #endif
 
-#ifdef PNG_sRGB_SUPPORTED
 png_uint_32 PNGAPI
 png_get_sRGB(png_const_structrp png_ptr, png_const_inforp info_ptr,
     int *file_srgb_intent)
@@ -729,9 +655,7 @@ png_get_sRGB(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_iCCP_SUPPORTED
 png_uint_32 PNGAPI
 png_get_iCCP(png_const_structrp png_ptr, png_inforp info_ptr,
     png_charpp name, int *compression_type,
@@ -757,9 +681,7 @@ png_get_iCCP(png_const_structrp png_ptr, png_inforp info_ptr,
    return (0);
 
 }
-#endif
 
-#ifdef PNG_sPLT_SUPPORTED
 int PNGAPI
 png_get_sPLT(png_const_structrp png_ptr, png_inforp info_ptr,
     png_sPLT_tpp spalettes)
@@ -772,9 +694,7 @@ png_get_sPLT(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_eXIf_SUPPORTED
 png_uint_32 PNGAPI
 png_get_eXIf(png_const_structrp png_ptr, png_inforp info_ptr,
     png_bytep *exif)
@@ -801,9 +721,7 @@ png_get_eXIf_1(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_hIST_SUPPORTED
 png_uint_32 PNGAPI
 png_get_hIST(png_const_structrp png_ptr, png_inforp info_ptr,
     png_uint_16p *hist)
@@ -819,7 +737,6 @@ png_get_hIST(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
 png_uint_32 PNGAPI
 png_get_IHDR(png_const_structrp png_ptr, png_const_inforp info_ptr,
@@ -865,7 +782,6 @@ png_get_IHDR(png_const_structrp png_ptr, png_const_inforp info_ptr,
    return (1);
 }
 
-#ifdef PNG_oFFs_SUPPORTED
 png_uint_32 PNGAPI
 png_get_oFFs(png_const_structrp png_ptr, png_const_inforp info_ptr,
     png_int_32 *offset_x, png_int_32 *offset_y, int *unit_type)
@@ -884,9 +800,7 @@ png_get_oFFs(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_pCAL_SUPPORTED
 png_uint_32 PNGAPI
 png_get_pCAL(png_const_structrp png_ptr, png_inforp info_ptr,
     png_charp *purpose, png_int_32 *X0, png_int_32 *X1, int *type, int *nparams,
@@ -911,9 +825,7 @@ png_get_pCAL(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_sCAL_SUPPORTED
 #  ifdef PNG_FIXED_POINT_SUPPORTED
 #    if defined(PNG_FLOATING_ARITHMETIC_SUPPORTED) || \
          defined(PNG_FLOATING_POINT_SUPPORTED)
@@ -971,9 +883,7 @@ png_get_sCAL_s(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return(0);
 }
-#endif /* sCAL */
 
-#ifdef PNG_pHYs_SUPPORTED
 png_uint_32 PNGAPI
 png_get_pHYs(png_const_structrp png_ptr, png_const_inforp info_ptr,
     png_uint_32 *res_x, png_uint_32 *res_y, int *unit_type)
@@ -1006,7 +916,6 @@ png_get_pHYs(png_const_structrp png_ptr, png_const_inforp info_ptr,
 
    return (retval);
 }
-#endif /* pHYs */
 
 png_uint_32 PNGAPI
 png_get_PLTE(png_const_structrp png_ptr, png_inforp info_ptr,
@@ -1026,7 +935,6 @@ png_get_PLTE(png_const_structrp png_ptr, png_inforp info_ptr,
    return (0);
 }
 
-#ifdef PNG_sBIT_SUPPORTED
 png_uint_32 PNGAPI
 png_get_sBIT(png_const_structrp png_ptr, png_inforp info_ptr,
     png_color_8p *sig_bit)
@@ -1042,9 +950,7 @@ png_get_sBIT(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_TEXT_SUPPORTED
 int PNGAPI
 png_get_text(png_const_structrp png_ptr, png_inforp info_ptr,
     png_textp *text_ptr, int *num_text)
@@ -1068,9 +974,7 @@ png_get_text(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return(0);
 }
-#endif
 
-#ifdef PNG_tIME_SUPPORTED
 png_uint_32 PNGAPI
 png_get_tIME(png_const_structrp png_ptr, png_inforp info_ptr,
     png_timep *mod_time)
@@ -1086,9 +990,7 @@ png_get_tIME(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_tRNS_SUPPORTED
 png_uint_32 PNGAPI
 png_get_tRNS(png_const_structrp png_ptr, png_inforp info_ptr,
     png_bytep *trans_alpha, int *num_trans, png_color_16p *trans_color)
@@ -1132,9 +1034,7 @@ png_get_tRNS(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (retval);
 }
-#endif
 
-#ifdef PNG_STORE_UNKNOWN_CHUNKS_SUPPORTED
 int PNGAPI
 png_get_unknown_chunks(png_const_structrp png_ptr, png_inforp info_ptr,
     png_unknown_chunkpp unknowns)
@@ -1147,23 +1047,18 @@ png_get_unknown_chunks(png_const_structrp png_ptr, png_inforp info_ptr,
 
    return (0);
 }
-#endif
 
-#ifdef PNG_READ_RGB_TO_GRAY_SUPPORTED
 png_byte PNGAPI
 png_get_rgb_to_gray_status(png_const_structrp png_ptr)
 {
    return (png_byte)(png_ptr ? png_ptr->rgb_to_gray_status : 0);
 }
-#endif
 
-#ifdef PNG_USER_CHUNKS_SUPPORTED
 png_voidp PNGAPI
 png_get_user_chunk_ptr(png_const_structrp png_ptr)
 {
    return (png_ptr ? png_ptr->user_chunk_ptr : NULL);
 }
-#endif
 
 size_t PNGAPI
 png_get_compression_buffer_size(png_const_structrp png_ptr)
@@ -1171,24 +1066,14 @@ png_get_compression_buffer_size(png_const_structrp png_ptr)
    if (png_ptr == NULL)
       return 0;
 
-#ifdef PNG_WRITE_SUPPORTED
    if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0)
-#endif
    {
-#ifdef PNG_SEQUENTIAL_READ_SUPPORTED
       return png_ptr->IDAT_read_size;
-#else
-      return PNG_IDAT_READ_SIZE;
-#endif
    }
-
-#ifdef PNG_WRITE_SUPPORTED
    else
       return png_ptr->zbuffer_size;
-#endif
 }
 
-#ifdef PNG_SET_USER_LIMITS_SUPPORTED
 /* These functions were added to libpng 1.2.6 and were enabled
  * by default in libpng-1.4.0 */
 png_uint_32 PNGAPI
@@ -1216,10 +1101,8 @@ png_get_chunk_malloc_max(png_const_structrp png_ptr)
 {
    return (png_ptr ? png_ptr->user_chunk_malloc_max : 0);
 }
-#endif /* SET_USER_LIMITS */
 
 /* These functions were added to libpng 1.4.0 */
-#ifdef PNG_IO_STATE_SUPPORTED
 png_uint_32 PNGAPI
 png_get_io_state(png_const_structrp png_ptr)
 {
@@ -1231,10 +1114,7 @@ png_get_io_chunk_type(png_const_structrp png_ptr)
 {
    return png_ptr->chunk_name;
 }
-#endif /* IO_STATE */
 
-#ifdef PNG_CHECK_FOR_INVALID_INDEX_SUPPORTED
-#  ifdef PNG_GET_PALETTE_MAX_SUPPORTED
 int PNGAPI
 png_get_palette_max(const png_struct* png_ptr, png_const_infop info_ptr)
 {
@@ -1243,7 +1123,3 @@ png_get_palette_max(const png_struct* png_ptr, png_const_infop info_ptr)
 
    return (-1);
 }
-#  endif
-#endif
-
-#endif /* READ || WRITE */
